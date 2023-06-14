@@ -5,6 +5,9 @@ import com.nat3z.qoluxe.gui.GuiConfig;
 import com.nat3z.qoluxe.impls.MinecraftHook;
 import com.nat3z.qoluxe.utils.ModAssistantHook;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.RunArgs;
+import net.minecraft.client.realms.RealmsClient;
+import net.minecraft.resource.ResourceReload;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +22,12 @@ public class MinecraftClientMixin {
     @Inject(at = @At("HEAD"), method = "close")
     private void close(CallbackInfo info) {
         QOLuxe.Companion.getViciousExt().saveConfig();
-        MinecraftHook.INSTANCE.checkUpdates(info);
+        MinecraftHook.INSTANCE.startUpdate();
+    }
+
+    @Inject(at = @At("HEAD"), method = "onInitFinished")
+    private void initHook(RealmsClient realms, ResourceReload reload, RunArgs.QuickPlay quickPlay, CallbackInfo ci) {
+        MinecraftHook.INSTANCE.checkUpdates(ci);
     }
 
     @Inject(at = @At("RETURN"), method = "tick")

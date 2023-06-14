@@ -5,6 +5,7 @@ import com.nat3z.qoluxe.utils.FileUtils
 import com.nat3z.qoluxe.utils.FrameMaker
 import com.nat3z.qoluxe.utils.ModAssistantHook
 import com.nat3z.qoluxe.utils.WebUtils.fetch
+import net.minecraft.client.MinecraftClient
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import java.awt.Dimension
 import java.awt.event.ActionListener
@@ -60,6 +61,7 @@ object MinecraftHook {
                 fetch("https://api.github.com/repos/Nat3z/$modName/releases") { res1 ->
                     val downloadURL = res1.asJsonArray().get(0).getAsJsonObject().get("assets").getAsJsonArray().get(0).getAsJsonObject().get("browser_download_url").getAsString()
                     val body = res1.asJsonArray().get(0).getAsJsonObject().get("body").getAsString()
+                    val jarFileName = res1.asJsonArray().get(0).getAsJsonObject().get("assets").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString()
                     var hashID: String = ""
                     if (body.contains("**SHA-256 Hash:** `")) {
                         QOLuxe.LOGGER.info(body.split("**SHA-256 Hash:** `"))
@@ -78,10 +80,13 @@ object MinecraftHook {
                         }
 
                     }
+                    if (updateAs == "") {
+                        updateAs = "$modName.jar"
+                    }
                     preparedUpdate = true
                     updateMarkdown = res.asJsonArray()[0].asJsonObject["body"].asString
                     updateVersion = res.asJsonArray().get(0).asJsonObject["tag_name"].asString
-                    updatePreperations = arrayOf<Any?>("https://api.github.com/repos/Nat3z/$modName/releases", downloadURL, finalModsFolder, updateAs, updateAs, hashID)
+                    updatePreperations = arrayOf<Any?>("https://api.github.com/repos/Nat3z/$modName/releases", downloadURL, finalModsFolder, updateAs, updateAs, hashID, jarFileName)
                 }
             } else if (res.asJsonArray().size() > 1 && QOLuxe.VERSION != res.asJsonArray().get(1).getAsJsonObject().get("tag_name").getAsString() && res.asJsonArray().get(1).getAsJsonObject().get("prerelease").asBoolean) {
                 /* update that mod! */
@@ -91,7 +96,8 @@ object MinecraftHook {
                     QOLuxe.LOGGER.info("Prepared update for $modName.")
                     var updateAs = ""
                     var hashID: String = ""
-                    val body = res1.asJsonArray().get(0).getAsJsonObject().get("body").getAsString()
+                    val body = res1.asJsonArray().get(1).getAsJsonObject().get("body").getAsString()
+                    val jarFileName = res1.asJsonArray().get(1).getAsJsonObject().get("assets").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString()
 
                     if (body.contains("**SHA-256 Hash:** `")) {
                         QOLuxe.LOGGER.info(body.split("**SHA-256 Hash:** `"))
@@ -106,10 +112,13 @@ object MinecraftHook {
                         }
 
                     }
+                    if (updateAs == "") {
+                        updateAs = "$modName.jar"
+                    }
                     preparedUpdate = true
                     updateMarkdown = res.asJsonArray()[1].asJsonObject["body"].asString
                     updateVersion = res.asJsonArray().get(1).asJsonObject["tag_name"].asString
-                    updatePreperations = arrayOf<Any?>("https://api.github.com/repos/Nat3z/$modName/releases", downloadURL, finalModsFolder, updateAs, updateAs, hashID)
+                    updatePreperations = arrayOf<Any?>("https://api.github.com/repos/Nat3z/$modName/releases", downloadURL, finalModsFolder, updateAs, updateAs, hashID, jarFileName)
                 }
             } else {
                 val versionType = File(QOLuxe.generalFolder.getAbsolutePath() + "\\versionType.txt")
@@ -166,6 +175,15 @@ object MinecraftHook {
                 }/* if downloaded is first ever download && version is unstable... */
                 QOLuxe.LOGGER.info("User is on the latest version of $modName.")
             }
+        }
+    }
+
+    fun startUpdate() {
+        if (preparedUpdate) {
+//            MinecraftClient.getInstance().window.close()
+            QOLuxe.LOGGER.info("Starting $modName update...")
+            ModAssistantHook.open(updatePreperations[0] as String, updatePreperations[1] as String,
+                updatePreperations[2] as File, updatePreperations[3] as String, updatePreperations[4] as String, updatePreperations[5] as String, updatePreperations[6] as String)
         }
     }
 

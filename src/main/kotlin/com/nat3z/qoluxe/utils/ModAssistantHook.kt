@@ -3,10 +3,7 @@ import com.nat3z.qoluxe.QOLuxe
 import net.minecraft.client.MinecraftClient
 import java.awt.Dimension
 import java.awt.event.ActionListener
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.lang.reflect.InvocationTargetException
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.TimeUnit
@@ -113,7 +110,7 @@ object ModAssistantHook {
 
     }
 
-    fun open(apiURL: String, downloadURL: String, modsFolder: File, filename: String, replacement: String, sha256: String): Boolean {
+    fun open(apiURL: String, downloadURL: String, modsFolder: File, filename: String, replacement: String, sha256: String, newNameOfJar: String): Boolean {
         val viciousFolder = File(MinecraftClient.getInstance().runDirectory.absolutePath + "\\vicious\\")
         if (!viciousFolder.exists()) {
             viciousFolder.mkdir()
@@ -227,17 +224,32 @@ object ModAssistantHook {
         }
 
         try {
-            val classes = JarFileReader.getClassesFromJarFile(viciousUpdateCycle)
-            for (c in classes) {
-                if (c.name.lowercase().contains("downloadreplace")) {
-                    val replaceMethod = c.getDeclaredMethod("downloadReplaceWindow", String::class.java, File::class.java, String::class.java, String::class.java, String::class.java)
+            // get the exe that is running the jar (jre)
+            val javaHome = System.getProperty("java.home")
+            // get the java bin path
+            val javaBin = javaHome + File.separator + "bin" + File.separator + "java"
+            // make it so that it appendes exe if on windows (so it can run) and if not, it will just run it as is
+            val javaBinPath = if (System.getProperty("os.name").toLowerCase().contains("win")) javaBin + ".exe" else javaBin
 
-                    QOLuxe.LOGGER.info("Attempting to update using Mod Assistant.")
-                    // start update
-                    replaceMethod.invoke(c.newInstance(), downloadURL, modsFolder, filename, replacement, sha256)
-                    exitProcess(0)
-                }
-            }
+            // go to updater.jar and run the jar file with
+
+            val process = ProcessBuilder(
+                "java",
+                "-jar",
+                viciousUpdateCycle.absolutePath,
+                downloadURL,
+                modsFolder.path,
+                filename,
+                replacement,
+                sha256,
+                "true",
+                newNameOfJar
+            ).start()
+
+            QOLuxe.LOGGER.info("Running Mod Assistant. " + "java -jar " + viciousUpdateCycle.absolutePath + " " + downloadURL + " " + modsFolder.absolutePath + " " + filename + " " + replacement + " " + sha256 + " true " + newNameOfJar)
+
+            exitProcess(0)
+
         } catch (ex: Exception) {
             QOLuxe.LOGGER.error("Failed to auto-update using Mod Assistant.")
             ex.printStackTrace()
