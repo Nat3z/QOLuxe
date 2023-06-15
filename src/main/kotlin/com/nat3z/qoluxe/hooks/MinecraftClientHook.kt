@@ -1,11 +1,10 @@
-package com.nat3z.qoluxe.impls
+package com.nat3z.qoluxe.hooks
 
 import com.nat3z.qoluxe.QOLuxe
 import com.nat3z.qoluxe.utils.FileUtils
 import com.nat3z.qoluxe.utils.FrameMaker
 import com.nat3z.qoluxe.utils.ModAssistantHook
 import com.nat3z.qoluxe.utils.WebUtils.fetch
-import net.minecraft.client.MinecraftClient
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import java.awt.Dimension
 import java.awt.event.ActionListener

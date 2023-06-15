@@ -1,9 +1,10 @@
 package com.nat3z.qoluxe.mixins;
 
 import com.nat3z.qoluxe.QOLuxe;
+import com.nat3z.qoluxe.QOLuxeConfig;
 import com.nat3z.qoluxe.gui.GuiConfig;
-import com.nat3z.qoluxe.impls.MinecraftHook;
-import com.nat3z.qoluxe.utils.ModAssistantHook;
+import com.nat3z.qoluxe.hooks.LockSlots;
+import com.nat3z.qoluxe.hooks.MinecraftHook;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.realms.RealmsClient;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {
     boolean alreadyPressed = false;
-
+    boolean alreadyPressedLockSlot = false;
     @Inject(at = @At("HEAD"), method = "close")
     private void close(CallbackInfo info) {
         QOLuxe.Companion.getViciousExt().saveConfig();
@@ -34,9 +35,11 @@ public class MinecraftClientMixin {
     private void tick(CallbackInfo info) {
         if (QOLuxe.getDisableAnimalRendering().isPressed() && !alreadyPressed) {
             alreadyPressed = true;
-            QOLuxe.setShouldDisableAnimalRendering(!QOLuxe.getShouldDisableAnimalRendering());
-            MinecraftClient.getInstance().player.sendMessage(Text.of(Formatting.GOLD + "Animal Rendering is now " + (QOLuxe.getShouldDisableAnimalRendering() ? Formatting.RED + "disabled" : Formatting.GREEN + "enabled") + Formatting.GOLD + "!"));
+            QOLuxeConfig.dontRenderAnimals = !QOLuxeConfig.dontRenderAnimals;
+            MinecraftClient.getInstance().player.sendMessage(Text.of(Formatting.GOLD + "Animal Rendering is now " + (QOLuxeConfig.dontRenderAnimals ? Formatting.RED + "disabled" : Formatting.GREEN + "enabled") + Formatting.GOLD + "!"));
         }
+
+
         if (!QOLuxe.getDisableAnimalRendering().isPressed()) {
             alreadyPressed = false;
         }

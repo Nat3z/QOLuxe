@@ -2,6 +2,7 @@ package com.nat3z.qoluxe
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
+import com.nat3z.qoluxe.hooks.LockSlots
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
@@ -20,9 +21,10 @@ class QOLuxe : ClientModInitializer {
 
     override fun onInitializeClient() {
         viciousExt.updateConfigVariables()
-        println("Hello Fabric world!")
         // register keybind
         KeyBindingHelper.registerKeyBinding(disableAnimalRendering)
+        KeyBindingHelper.registerKeyBinding(lockSlot)
+        LockSlots.refreshLockSlotCache()
         ClientCommandRegistrationCallback.EVENT.register(ClientCommandRegistrationCallback { dispatcher: CommandDispatcher<FabricClientCommandSource?>, _: CommandRegistryAccess? ->
             dispatcher.register(
                 ClientCommandManager.literal("luxe").executes { _ ->
@@ -47,10 +49,10 @@ class QOLuxe : ClientModInitializer {
         @JvmStatic
         val LOGGER: Logger = LogManager.getLogger("QOLuxe Logger")!!
         @JvmStatic
-        var shouldDisableAnimalRendering = false
-        @JvmStatic
         var showGui = false
         @JvmStatic
-        val disableAnimalRendering = KeyBinding("Disable Animal Rendering", InputUtil.GLFW_KEY_C, "Essentially Essential")
+        val disableAnimalRendering = KeyBinding("Disable Animal Rendering", InputUtil.GLFW_KEY_C, "QOLuxe")
+        @JvmStatic
+        val lockSlot = KeyBinding("Lock Slot", InputUtil.GLFW_KEY_C, "QOLuxe")
     }
 }

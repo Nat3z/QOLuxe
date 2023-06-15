@@ -35,12 +35,10 @@ public class MobEntityRendererMixin {
             cachedAnimalList = QOLuxeConfig.animalsToNotRender;
         }
 
-        if (entity instanceof AnimalEntity && QOLuxe.getShouldDisableAnimalRendering()) {
-            if (cachedAnimalArray.contains(entity.getType().getName().getString().toLowerCase())) {
-                cir.setReturnValue(false);
-            }
+        if (entity instanceof AnimalEntity && QOLuxeConfig.dontRenderAnimals && cachedAnimalArray.contains(entity.getType().getName().getString().toLowerCase())) {
+            cir.setReturnValue(false);
         }
-        else if (QOLuxe.getShouldDisableAnimalRendering() && QOLuxeConfig.animalsToNotRender.equals("*") && entity instanceof AnimalEntity) {
+        else if (QOLuxeConfig.dontRenderAnimals && QOLuxeConfig.animalsToNotRender.equals("*") && entity instanceof AnimalEntity) {
             cir.setReturnValue(false);
         }
     }

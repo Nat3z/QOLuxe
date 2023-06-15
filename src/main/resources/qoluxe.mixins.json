@@ -3,6 +3,10 @@
   "package": "com.nat3z.qoluxe.mixins",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "ClientPlayerEntityMixin",
+    "InGameHudMixin",
+    "HandledScreenMixin",
+    "KeyboardMixin",
     "MinecraftClientMixin",
     "MobEntityRendererMixin"
   ],
