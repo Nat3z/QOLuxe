@@ -17,5 +17,5 @@ public @interface Configurable {
     ConfigType type();
     boolean requiresElementToggled() default true;
     String requiredElementToggled() default "";
-    boolean UAYOR();
+    boolean hidden();
 }

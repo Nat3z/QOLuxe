@@ -46,7 +46,7 @@ public class ViciousMod {
             if (variable.isAnnotationPresent(Configurable.class)) {
                 try {
                     Configurable config = (Configurable)variable.getAnnotation(Configurable.class);
-                    List<Object> defined = new ArrayList();
+                    List<Object> defined = new ArrayList<>();
                     defined.add(config.description());
                     if (config.type() == ConfigType.HUD) {
                         HudElement hudElement = (HudElement) variable.get(getConfig());
@@ -75,7 +75,7 @@ public class ViciousMod {
     public void updateConfigVariables() {
         try {
             InputStream inputStream = new FileInputStream(configFile);
-            HashMap<String, Object> data = (HashMap<String, Object>) yamlDisplay().load(inputStream);
+            HashMap<String, Object> data = yamlDisplay().load(inputStream);
 
             if (data == null) return;
 
@@ -104,7 +104,7 @@ public class ViciousMod {
             if (variable.isAnnotationPresent(Configurable.class)) {
                 Configurable cfg = variable.getAnnotation(Configurable.class);
 
-                configItemList.add(new ConfigItem(variable, cfg.name(), cfg.description(), cfg.subCategory(), cfg.category(), cfg.type(), cfg.UAYOR(), cfg.sliderChoices(), getConfig()));
+                configItemList.add(new ConfigItem(variable, cfg.name(), cfg.description(), cfg.subCategory(), cfg.category(), cfg.type(), cfg.hidden(), cfg.sliderChoices(), getConfig()));
             }
         }
 

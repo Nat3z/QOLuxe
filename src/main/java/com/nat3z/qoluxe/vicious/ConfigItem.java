@@ -11,8 +11,8 @@ public class ConfigItem {
     private ViciousConfig config;
     private String[] sliderOptions;
     private String subCategory;
-    private boolean uayor;
-    public ConfigItem(Field variable, String name, String description, String subCategory, String category, ConfigType type, boolean uayor, String[] sliderOptions, ViciousConfig config) {
+    private boolean hidden;
+    public ConfigItem(Field variable, String name, String description, String subCategory, String category, ConfigType type, boolean hidden, String[] sliderOptions, ViciousConfig config) {
         this.name = name;
         this.description = description;
         this.category = category;
@@ -20,7 +20,7 @@ public class ConfigItem {
         this.config = config;
         var = variable;
         this.sliderOptions = sliderOptions;
-        this.uayor = uayor;
+        this.hidden = hidden;
         this.subCategory = subCategory;
     }
 
@@ -61,8 +61,8 @@ public class ConfigItem {
         return null;
     }
 
-    public boolean shouldUseAtOwnRisk() {
-        return uayor;
+    public boolean getHidden() {
+        return hidden;
     }
 
     public ViciousConfig getConfig() {

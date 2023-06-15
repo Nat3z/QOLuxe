@@ -5,13 +5,33 @@ import com.nat3z.qoluxe.vicious.Configurable;
 import com.nat3z.qoluxe.vicious.ViciousConfig;
 
 public class QOLuxeConfig implements ViciousConfig {
+
+    @Configurable(
+            name = "Prevent Animals from Rendering",
+            description = "",
+            category = "Rendering",
+            hidden = false,
+            subCategory = "Animal",
+            type = ConfigType.TOGGLE
+    )
+    public static boolean dontRenderAnimals = false;
     @Configurable(
             name = "Animals to Stop Rendering",
-            description = "Animals to stop rendering. Separate with commas. (e.g. Sheep, Cow, Pig)",
+            description = "Separate with commas. (e.g. Sheep, Cow, Pig)",
             category = "Rendering",
-            UAYOR = false,
+            hidden = false,
             subCategory = "Animal",
             type = ConfigType.INPUT_FIELD
     )
-    public static String animalsToNotRender = "";
+    public static String animalsToNotRender = "Sheep";
+    @Configurable(
+            name = "Locked Slots",
+            description = "Slots that are locked",
+            category = "Inventory",
+            hidden = true,
+            subCategory = "Slots",
+            type = ConfigType.INPUT_FIELD
+    )
+    public static String lockedSlots = "";
+
 }
