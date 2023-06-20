@@ -6,6 +6,7 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.MessageScreen
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.gui.screen.world.SelectWorldScreen
 import net.minecraft.client.gui.screen.world.WorldListWidget.WorldEntry
 import net.minecraft.client.gui.tooltip.Tooltip
 import net.minecraft.client.gui.widget.ButtonWidget
@@ -54,73 +55,85 @@ public class ResolveSaveConflict(val levelName: String) : Screen(Text.of("Resolv
         super.render(context, mouseX, mouseY, delta)
     }
 
+    override fun close() {
+        MinecraftClient.getInstance().setScreenAndRender(SelectWorldScreen(null))
+        return
+    }
+
     override fun shouldCloseOnEsc(): Boolean {
         return false;
     }
 
     override fun init() {
         checkingForSaveConflict = true;
+        Thread {
 
-        val worldDirectory = File("${MinecraftClient.getInstance().runDirectory}/saves/$levelName")
-        conflictFound = CloudProvider.checkForSaveConflict_Sync(worldDirectory)
-        if (conflictFound) {
-            gridWidget.mainPositioner.margin(4, 4, 4, 0)
-            val adder = gridWidget.createAdder(2)
-            adder.add(ButtonWidget.builder(Text.of("Use Local Save")) { button: ButtonWidget ->
-                MinecraftClient.getInstance().setScreenAndRender(
-                    MessageScreen(
-                        Text.of("Overriding Cloud Save and Merging with Local Save...")
-                    )
-                )
-                var result = CloudProvider.resolve_ClientToCloud(worldDirectory)
-                if (result) {
-                    MinecraftClient.getInstance().setScreenAndRender(null)
-                }
-                else {
-                    MinecraftClient.getInstance().setScreenAndRender(
-                        MessageScreen(
-                            Text.of("Merge failed! Please complete this merge manually by copying the contents of your local save into your cloud save")
+            val worldDirectory = File("${MinecraftClient.getInstance().runDirectory}/saves/$levelName")
+            conflictFound = CloudProvider.checkForSaveConflict_Sync(worldDirectory)
+            if (conflictFound) {
+                gridWidget.mainPositioner.margin(4, 4, 4, 0)
+                val adder = gridWidget.createAdder(2)
+                adder.add(
+                    ButtonWidget.builder(Text.of("Use Local Save")) { button: ButtonWidget ->
+                        MinecraftClient.getInstance().setScreenAndRender(
+                            MessageScreen(
+                                Text.of("Overriding Cloud Save and Merging with Local Save...")
+                            )
                         )
-                    )
-                }
-            }.dimensions(0, 0, 213, 20).tooltip(Tooltip.of(Text.of("This will override your cloud save, making the cloud save use the contents of your local save.\nTL;DR Cloud save loses progress."))).build(), 2, gridWidget.copyPositioner().marginTop(100))
-            adder.add(ButtonWidget.builder(Text.of("Use Cloud Save")) { button: ButtonWidget ->
-                MinecraftClient.getInstance().setScreenAndRender(
-                    MessageScreen(
-                        Text.of("Overriding Cloud Save and Merging with Local Save...")
-                    )
+                        var result = CloudProvider.resolve_ClientToCloud(worldDirectory)
+                        if (result) {
+                            MinecraftClient.getInstance().setScreenAndRender(SelectWorldScreen(null))
+                        } else {
+                            MinecraftClient.getInstance().setScreenAndRender(
+                                MessageScreen(
+                                    Text.of("Merge failed! Please complete this merge manually by copying the contents of your local save into your cloud save")
+                                )
+                            )
+                        }
+                    }.dimensions(0, 0, 213, 20)
+                        .tooltip(Tooltip.of(Text.of("This will override your cloud save, making the cloud save use the contents of your local save.\nTL;DR Cloud save loses progress.")))
+                        .build(), 2, gridWidget.copyPositioner().marginTop(100)
                 )
-                var result = CloudProvider.resolve_ClientToCloud(worldDirectory)
-                if (result) {
-                    MinecraftClient.getInstance().setScreenAndRender(null)
-                }
-                else {
-                    MinecraftClient.getInstance().setScreenAndRender(
-                        MessageScreen(
-                            Text.of("Merge failed! Please complete this merge manually by copying the contents of your local save into your cloud save")
+                adder.add(
+                    ButtonWidget.builder(Text.of("Use Cloud Save")) { button: ButtonWidget ->
+                        MinecraftClient.getInstance().setScreenAndRender(
+                            MessageScreen(
+                                Text.of("Overriding Cloud Save and Merging with Local Save...")
+                            )
                         )
-                    )
-                }
-            }.tooltip(Tooltip.of(Text.of("This will override your local save, making the local save use the contents of your cloud save.\nTL;DR Local save loses progress."))).dimensions(0, 0, 213, 20).build(), 2, gridWidget.copyPositioner().marginTop(10))
-            adder.add(ButtonWidget.builder(Text.of("Close")) { button: ButtonWidget ->
-                MinecraftClient.getInstance().setScreenAndRender(null)
-            }.dimensions(0, 0, 213, 20).build(), 2, gridWidget.copyPositioner().marginTop(10))
-        }
-        else {
-            gridWidget.mainPositioner.margin(4, 4, 4, 0)
-            val adder = gridWidget.createAdder(2)
-            adder.add(ButtonWidget.builder(Text.of("Close")) { button: ButtonWidget ->
-                MinecraftClient.getInstance().setScreenAndRender(null)
-            }.dimensions(0, 0, 213, 20).build(), 2, gridWidget.copyPositioner().marginTop(100))
-        }
-        gridWidget.refreshPositions()
-        SimplePositioningWidget.setPos(gridWidget, 0, this.height / 7, width, height, 0.5f, 0.25f)
-        gridWidget.forEachChild { drawableElement: ClickableWidget? ->
-            addDrawableChild(
-                drawableElement
-            )
-        }
-        checkingForSaveConflict = false;
+                        var result = CloudProvider.resolve_ClientToCloud(worldDirectory)
+                        if (result) {
+                            MinecraftClient.getInstance().setScreenAndRender(SelectWorldScreen(null))
+                        } else {
+                            MinecraftClient.getInstance().setScreenAndRender(
+                                MessageScreen(
+                                    Text.of("Merge failed! Please complete this merge manually by copying the contents of your local save into your cloud save")
+                                )
+                            )
+                        }
+                    }
+                        .tooltip(Tooltip.of(Text.of("This will override your local save, making the local save use the contents of your cloud save.\nTL;DR Local save loses progress.")))
+                        .dimensions(0, 0, 213, 20).build(), 2, gridWidget.copyPositioner().marginTop(10)
+                )
+                adder.add(ButtonWidget.builder(Text.of("Close")) { button: ButtonWidget ->
+                    this.close()
+                }.dimensions(0, 0, 213, 20).build(), 2, gridWidget.copyPositioner().marginTop(10))
+            } else {
+                gridWidget.mainPositioner.margin(4, 4, 4, 0)
+                val adder = gridWidget.createAdder(2)
+                adder.add(ButtonWidget.builder(Text.of("Close")) { button: ButtonWidget ->
+                    MinecraftClient.getInstance().setScreenAndRender(null)
+                }.dimensions(0, 0, 213, 20).build(), 2, gridWidget.copyPositioner().marginTop(100))
+            }
+            gridWidget.refreshPositions()
+            SimplePositioningWidget.setPos(gridWidget, 0, this.height / 7, width, height, 0.5f, 0.25f)
+            gridWidget.forEachChild { drawableElement: ClickableWidget? ->
+                addDrawableChild(
+                    drawableElement
+                )
+            }
+            checkingForSaveConflict = false;
+        }.start()
         super.init()
     }
 }

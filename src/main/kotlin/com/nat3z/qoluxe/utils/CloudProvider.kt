@@ -5,6 +5,7 @@ import com.nat3z.qoluxe.QOLuxeConfig
 import com.nat3z.qoluxe.hooks.MinecraftHook
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.screen.MessageScreen
+import net.minecraft.client.gui.screen.world.SelectWorldScreen
 import net.minecraft.client.gui.screen.world.WorldListWidget.WorldEntry
 import net.minecraft.text.Text
 import org.apache.commons.io.FileUtils
@@ -57,7 +58,7 @@ object CloudProvider {
         performingCloudTask = true
         FileUtils.deleteDirectory(getCloudWorldDirectory(worldFolder))
         performingCloudTask = false
-        MinecraftClient.getInstance().setScreenAndRender(null)
+        MinecraftClient.getInstance().setScreenAndRender(SelectWorldScreen(null))
     }
 
     fun checkForSaveConflict_Sync(worldFolder: File): Boolean {
@@ -95,6 +96,19 @@ object CloudProvider {
     }
     fun syncSave(worldFolder: File): Boolean {
         performingCloudTask = true
+        val cloudWorldLog = File(getCloudWorldDirectory(worldFolder).path + "/saveLog.txt")
+        val localWorldLog = File(worldFolder.path + "/saveLog.txt")
+
+        if (cloudWorldLog.exists() && localWorldLog.exists()) {
+            val cloudWorldInfo = FileUtils.readFileToString(cloudWorldLog, "UTF-8")
+            val localWorldInfo = FileUtils.readFileToString(localWorldLog, "UTF-8")
+            if (cloudWorldInfo == localWorldInfo) {
+                performingCloudTask = false
+                QOLuxe.LOGGER.info("Cloud Save is up to date.")
+                return true
+            }
+        }
+
         System.out.println("java -jar ${cloudProviderJar.absolutePath} sync ${getCloudWorldDirectory(worldFolder).path} ${worldFolder.path}")
         val process = ProcessBuilder(
             "java",
@@ -180,8 +194,7 @@ object CloudProvider {
 
         System.out.println("Downloading Cloud Saves...")
         FileUtils.copyDirectory(File(QOLuxeConfig.cloudSaveLocation), File("${MinecraftClient.getInstance().runDirectory}/saves/"))
-        MinecraftClient.getInstance()
-            .setScreenAndRender(MessageScreen(Text.of("Cloud save downloads complete. Please restart Minecraft to continue.")))
+        MinecraftClient.getInstance().setScreenAndRender(SelectWorldScreen(null))
         System.out.println("Completed.")
         performingCloudTask = false
     }

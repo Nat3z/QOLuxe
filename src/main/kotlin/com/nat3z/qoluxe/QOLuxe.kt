@@ -50,7 +50,7 @@ class QOLuxe : ClientModInitializer {
         @JvmStatic
         val IS_UNSTABLE = false
         @JvmStatic
-        val VERSION = "1.0.3"
+        val VERSION = "1.0.4"
         @JvmStatic
         val LOGGER: Logger = LogManager.getLogger("QOLuxe Logger")!!
         @JvmStatic

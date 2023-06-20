@@ -5,6 +5,7 @@ import com.nat3z.qoluxe.utils.CloudProvider
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.gui.screen.world.SelectWorldScreen
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.ClickableWidget
 import net.minecraft.client.gui.widget.GridWidget
@@ -29,9 +30,9 @@ public class OverrideWarningCloud : Screen(Text.of("Override Cloud Save")) {
         gridWidget.mainPositioner.margin(4, 4, 4, 0)
         val adder = gridWidget.createAdder(2)
         adder.add(ButtonWidget.builder(Text.of("Cancel")) { button: ButtonWidget ->
-            MinecraftClient.getInstance().setScreenAndRender(null)
+            MinecraftClient.getInstance().setScreenAndRender(SelectWorldScreen(null))
         }.dimensions(0, 0, 213, 20).build(), 2, gridWidget.copyPositioner().marginTop(100))
-        var overrideWorlds = ButtonWidget.builder(Text.of("Override")) { button: ButtonWidget ->
+        var overrideWorlds = ButtonWidget.builder(Text.of("Continue (10s)")) { button: ButtonWidget ->
             CloudProvider.downloadAllSaves()
         }.dimensions(0, 0, 213, 20).build()
 
@@ -51,10 +52,10 @@ public class OverrideWarningCloud : Screen(Text.of("Override Cloud Save")) {
             while (secondsRemaining > 0) {
                 Thread.sleep(1000)
                 secondsRemaining--
-                overrideWorlds.message = Text.of("Override (${secondsRemaining}s)")
+                overrideWorlds.message = Text.of("Continue (${secondsRemaining}s)")
             }
             overrideWorlds.active = true
-            overrideWorlds.message = Text.of("${Formatting.RED}Override")
+            overrideWorlds.message = Text.of("${Formatting.RED}Continue")
 
         }.start()
     }

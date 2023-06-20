@@ -29,6 +29,12 @@ class SelectCloudSaveFolder(val worldName: String, val worldEntry: WorldEntry) :
         context.drawCenteredTextWithShadow(textRenderer, Text.of("Select Cloud Save Folder"), width / 2, gridWidget.y + 50, 0xFFFFFF)
         context.drawCenteredTextWithShadow(textRenderer, Text.of("${Formatting.UNDERLINE}Tips"), width / 2, gridWidget.y + 140, 0xFFFFFF)
         context.drawCenteredTextWithShadow(textRenderer, Text.of("If you are using ${Formatting.YELLOW}Google Drive Desktop${Formatting.RESET}, insert \"G:\\My Drive\\Minecraft\\\""), width / 2, gridWidget.y + 160, 0xFFFFFF)
+        context.drawCenteredTextWithShadow(textRenderer, Text.of("If you are using ${Formatting.YELLOW}OneDrive Desktop${Formatting.RESET}, insert \"C:\\Users\\{Desktop Username}\\OneDrive\\Minecraft\\\""), width / 2, gridWidget.y + 170, 0xFFFFFF)
+    }
+
+    override fun close() {
+        MinecraftClient.getInstance().setScreenAndRender(SelectWorldScreen(null))
+        return
     }
 
     override fun init() {

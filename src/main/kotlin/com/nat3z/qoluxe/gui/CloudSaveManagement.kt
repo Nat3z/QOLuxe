@@ -5,12 +5,15 @@ import com.nat3z.qoluxe.utils.CloudProvider
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.gui.screen.world.SelectWorldScreen
 import net.minecraft.client.gui.screen.world.WorldListWidget.WorldEntry
+import net.minecraft.client.gui.tooltip.Tooltip
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.ClickableWidget
 import net.minecraft.client.gui.widget.GridWidget
 import net.minecraft.client.gui.widget.SimplePositioningWidget
 import net.minecraft.text.Text
+import net.minecraft.util.Formatting
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.text.DateFormat
@@ -26,6 +29,11 @@ class CloudSaveManagement(val worldName: String, val worldEntry: WorldEntry) : S
     var lastLocalSave = "Unknown-Set"
     var lastCloudSave = "Unknown-Set"
     var verifyDeletion = false
+
+    override fun close() {
+        MinecraftClient.getInstance().setScreenAndRender(SelectWorldScreen(null))
+        return
+    }
 
     override fun render(context: DrawContext?, mouseX: Int, mouseY: Int, delta: Float) {
         if (lastCloudSave == "Unknown-Set") {
@@ -64,9 +72,14 @@ class CloudSaveManagement(val worldName: String, val worldEntry: WorldEntry) : S
             if (!verifyDeletion) {
                 Thread {
                     button.active = false
-                    button.message = Text.of("Are you sure?")
-                    Thread.sleep(5000)
-                    button.message = Text.of("Confirm Deletion")
+                    button.message = Text.of("Delete (5s)")
+                    var timeRemaining = 5
+                    while (timeRemaining > 0) {
+                        button.message = Text.of("Delete (${timeRemaining}s)")
+                        Thread.sleep(1000)
+                        timeRemaining--
+                    }
+                    button.message = Text.of("${Formatting.RED}Delete")
                     verifyDeletion = true
                     button.active = true
                 }.start()
@@ -74,7 +87,7 @@ class CloudSaveManagement(val worldName: String, val worldEntry: WorldEntry) : S
             }
 
             CloudProvider.deleteSave(File("${QOLuxeConfig.cloudSaveLocation}/${worldName}"))
-        }.dimensions(0, 0, 102, 20).build(), 1, gridWidget.copyPositioner().marginTop(10))
+        }.tooltip(Tooltip.of(Text.of("This will delete the cloud save of $worldName, not including the local save.\n\nThis is a ${Formatting.RED}destructive${Formatting.RESET} action."))).dimensions(0, 0, 102, 20).build(), 1, gridWidget.copyPositioner().marginTop(10))
         val resolveConflicts = ButtonWidget.builder(Text.of("Edit Cloud Path")) { button: ButtonWidget ->
             MinecraftClient.getInstance().setScreenAndRender(SelectCloudSaveFolder(worldName, worldEntry))
         }.dimensions(0, 0, 102, 20).build()
