@@ -14,7 +14,7 @@ java {
 }
 
 group = "com.nat3z.qoluxe"
-version = "1.0"
+version = "1.0.3"
 
 val shadowImpl: Configuration by configurations.creating {
     configurations.implementation.get().extendsFrom(this)
@@ -34,6 +34,7 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
     implementation("org.yaml:snakeyaml:2.0")
+    implementation("commons-io:commons-io:2.13.0")
 
     minecraft("com.mojang:minecraft:$minecraftVersion")
     mappings("net.fabricmc:yarn:$yarnVersion:v2")
@@ -69,6 +70,8 @@ tasks {
 tasks.shadowJar {
     dependencies {
         include(dependency("org.yaml:snakeyaml:2.0"))
+        include(dependency("commons-io:commons-io:2.13.0"))
+        relocate("org.apache.commons.io", "com.nat3z.qoluxe.commons.io")
         relocate("org.yaml.snakeyaml", "com.nat3z.qoluxe.snakeyaml")
     }
 }

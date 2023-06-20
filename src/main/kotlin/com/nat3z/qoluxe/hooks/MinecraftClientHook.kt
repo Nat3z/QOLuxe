@@ -191,7 +191,7 @@ object MinecraftHook {
     }
 
     @Throws(IOException::class)
-    private fun downloader(modsFolder: File, link: String, fileName: String) {
+    fun downloader(modsFolder: File, link: String, fileName: String) {
         var link = link
         var url = URL(link)
         var http = url.openConnection() as HttpURLConnection

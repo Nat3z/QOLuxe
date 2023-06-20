@@ -29,6 +29,11 @@ class GuiConfig : Screen(Text.of("QOLuxe Config")) {
             context.drawText(textRenderer, "v${QOLuxe.VERSION}", width / 2 - 15, currentGridWidget.y + 30,
                 it1, true)
         }
+
+        Formatting.WHITE.colorValue?.let { it1 ->
+            context.drawText(textRenderer, QOLuxeConfig.cloudSaveSignature, 10, 10,
+                it1, true)
+        }
         super.render(context, mouseX, mouseY, delta)
     }
 

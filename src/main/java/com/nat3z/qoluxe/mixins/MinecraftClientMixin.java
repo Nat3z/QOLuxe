@@ -5,6 +5,7 @@ import com.nat3z.qoluxe.QOLuxeConfig;
 import com.nat3z.qoluxe.gui.GuiConfig;
 import com.nat3z.qoluxe.hooks.LockSlots;
 import com.nat3z.qoluxe.hooks.MinecraftHook;
+import com.nat3z.qoluxe.utils.CloudProvider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.realms.RealmsClient;
@@ -28,6 +29,7 @@ public class MinecraftClientMixin {
 
     @Inject(at = @At("HEAD"), method = "onInitFinished")
     private void initHook(RealmsClient realms, ResourceReload reload, RunArgs.QuickPlay quickPlay, CallbackInfo ci) {
+        CloudProvider.INSTANCE.updateCloudProviderJar();
         MinecraftHook.INSTANCE.checkUpdates(ci);
     }
 
@@ -47,6 +49,11 @@ public class MinecraftClientMixin {
             QOLuxe.setShowGui(false);
             System.out.println("Showing GUI");
             MinecraftClient.getInstance().setScreen(new GuiConfig());
+        }
+
+        if (QOLuxe.Companion.getShownGui() != null) {
+            MinecraftClient.getInstance().setScreen(QOLuxe.Companion.getShownGui());
+            QOLuxe.Companion.setShownGui(null);
         }
     }
 }

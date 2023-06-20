@@ -34,4 +34,33 @@ public class QOLuxeConfig implements ViciousConfig {
     )
     public static String lockedSlots = "";
 
+    @Configurable(
+            name = "Cloud Save",
+            description = "Location for Cloud Saves",
+            category = "Cloud",
+            hidden = true,
+            subCategory = "---",
+            type = ConfigType.INPUT_FIELD
+    )
+    public static String cloudSaveLocation = "";
+
+    @Configurable(
+            name = "Signature",
+            description = "Cloud Save Signature",
+            category = "Cloud",
+            hidden = true,
+            subCategory = "---",
+            type = ConfigType.INPUT_FIELD
+    )
+    public static String cloudSaveSignature = "";
+    @Configurable(
+            name = "Levels Opted For Cloud Save",
+            description = "Levels for Cloud Saving",
+            category = "Cloud",
+            hidden = true,
+            subCategory = "---",
+            type = ConfigType.INPUT_FIELD
+    )
+    public static String levelsOptedCloudSave = "";
+
 }

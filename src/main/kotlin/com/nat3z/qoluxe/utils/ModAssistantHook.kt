@@ -219,7 +219,7 @@ object ModAssistantHook {
                 if (!alreadyDisabled)
                     FileUtils.writeToFile(optOutPreRelease, FileUtils.readFile(optOutPreRelease) + assistVersionDownload.get() + "/n")
             }
-            QOLuxe.LOGGER.info("Jasper Update Abandoned.")
+            QOLuxe.LOGGER.info("QOLuxe Update Abandoned.")
             return false
         }
 
@@ -247,7 +247,6 @@ object ModAssistantHook {
             ).start()
 
             QOLuxe.LOGGER.info("Running Mod Assistant. " + "java -jar " + viciousUpdateCycle.absolutePath + " " + downloadURL + " " + modsFolder.absolutePath + " " + filename + " " + replacement + " " + sha256 + " true " + newNameOfJar)
-
             exitProcess(0)
 
         } catch (ex: Exception) {

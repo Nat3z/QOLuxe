@@ -10,17 +10,22 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.util.InputUtil
 import net.minecraft.command.CommandRegistryAccess
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
+import java.util.UUID
 
 class QOLuxe : ClientModInitializer {
 
     override fun onInitializeClient() {
         viciousExt.updateConfigVariables()
+        if (QOLuxeConfig.cloudSaveSignature.isEmpty()) {
+            QOLuxeConfig.cloudSaveSignature = UUID.randomUUID().toString()
+        }
         // register keybind
         KeyBindingHelper.registerKeyBinding(disableAnimalRendering)
         KeyBindingHelper.registerKeyBinding(lockSlot)
@@ -45,14 +50,17 @@ class QOLuxe : ClientModInitializer {
         @JvmStatic
         val IS_UNSTABLE = false
         @JvmStatic
-        val VERSION = "1.0.1"
+        val VERSION = "1.0.3"
         @JvmStatic
         val LOGGER: Logger = LogManager.getLogger("QOLuxe Logger")!!
         @JvmStatic
         var showGui = false
+        var shownGui: Screen? = null
         @JvmStatic
         val disableAnimalRendering = KeyBinding("Disable Animal Rendering", InputUtil.GLFW_KEY_C, "QOLuxe")
         @JvmStatic
         val lockSlot = KeyBinding("Lock Slot", InputUtil.GLFW_KEY_C, "QOLuxe")
+        @JvmStatic
+        var currentClientWorldName: String? = null
     }
 }

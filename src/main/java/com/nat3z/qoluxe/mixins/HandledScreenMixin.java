@@ -43,26 +43,26 @@ public class HandledScreenMixin {
     private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         try {
             Screen currentScreen = MinecraftClient.getInstance().currentScreen;
-            if (currentScreen instanceof CreativeInventoryScreen) return;
             if (currentScreen instanceof HandledScreen<?>) {
-                if (LockSlots.INSTANCE.getLockHoveredSlot() && focusedSlot != null) {
-                    LockSlots.INSTANCE.setLockHoveredSlot(false);
-                    if (focusedSlot.id > LockSlots.INSTANCE.getSlotsOccupiedByContainer((HandledScreen<ScreenHandler>) currentScreen)) return;
-                    int slotId = focusedSlot.id;
-                    if (currentScreen instanceof InventoryScreen && focusedSlot.id >= 5 && focusedSlot.id <= 8) {
-                        // make the armor slots above 45 to make them not appear in chests and stuff
-                        slotId += 45;
+                if (!(currentScreen instanceof CreativeInventoryScreen))
+                    if (LockSlots.INSTANCE.getLockHoveredSlot() && focusedSlot != null) {
+                        LockSlots.INSTANCE.setLockHoveredSlot(false);
+                        if (focusedSlot.id <= LockSlots.INSTANCE.getSlotsOccupiedByContainer((HandledScreen<ScreenHandler>) currentScreen)) return;
+                        int slotId = focusedSlot.id;
+                        if (currentScreen instanceof InventoryScreen && focusedSlot.id >= 5 && focusedSlot.id <= 8) {
+                            // make the armor slots above 45 to make them not appear in chests and stuff
+                            slotId += 45;
+                        }
+                        int trueSlotId = LockSlots.INSTANCE.getSlotDifference((HandledScreen<ScreenHandler>) currentScreen, slotId, false);
+                        if (!LockSlots.INSTANCE.isSlotLocked(trueSlotId)) {
+                            LockSlots.INSTANCE.addSlotToLock(trueSlotId);
+                            MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                        }
+                        else {
+                            LockSlots.INSTANCE.removeSlotFromLock(trueSlotId);
+                            MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F));
+                        }
                     }
-                    int trueSlotId = LockSlots.INSTANCE.getSlotDifference((HandledScreen<ScreenHandler>) currentScreen, slotId, false);
-                    if (!LockSlots.INSTANCE.isSlotLocked(trueSlotId)) {
-                        LockSlots.INSTANCE.addSlotToLock(trueSlotId);
-                        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                    }
-                    else {
-                        LockSlots.INSTANCE.removeSlotFromLock(trueSlotId);
-                        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F));
-                    }
-                }
 //                if (focusedSlot != null) {
 //                    context.fillGradient(
 //                            RenderLayer.getGuiOverlay(),
@@ -133,8 +133,9 @@ public class HandledScreenMixin {
         return false;
     }
 
-    @Inject(at = @At("HEAD"), method = "onMouseClick*", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V", cancellable = true)
     private void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
+        if (slot == null) return;
         if (checkIfSlotIsLocked(slot.id)) ci.cancel();
     }
 }
