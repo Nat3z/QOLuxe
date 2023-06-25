@@ -46,6 +46,7 @@ public class InGameHudMixin {
             long bindColor = BindSlots.INSTANCE.getSlotBindingColors().get(amountOfBinds);
             if (bind.component1() == hotbarSlotIndex || bind.component2() == hotbarSlotIndex) {
                 context.fillGradient(x, y, x + 16, y + 16, (int) bindColor, (int) bindColor);
+                break;
             }
             amountOfBinds++;
         }

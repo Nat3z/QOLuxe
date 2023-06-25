@@ -136,6 +136,16 @@ class GuiConfig : Screen(Text.of("QOLuxe Config")) {
                 textField.tooltip = Tooltip.of(Text.of("${Formatting.YELLOW}${configItem.name}${Formatting.RESET}\n${configItem.description}"))
                 item = textField
             }
+            else if (configItem.type == ConfigType.RUNNABLE) {
+                val button = ButtonWidget.builder(
+                    Text.of(configItem.name)
+                ) { button: ButtonWidget ->
+                    (configItem.field.get(QOLuxe.viciousExt.config) as Runnable).run()
+                }.tooltip(Tooltip.of(Text.of(configItem.description))).width(204).build()
+                // check if the user is currently connected to the realms and disable the button if they are
+                button.visible = false
+                item = button
+            }
 
             if (!configItem.hidden) {
                 adder.add(item, 2, if (length == 0) gridWidget.copyPositioner().marginTop(50) else gridWidget.copyPositioner().marginTop(10))

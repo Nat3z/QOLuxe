@@ -184,16 +184,11 @@ public class HandledScreenMixin {
         slotId = LockSlots.INSTANCE.getSlotDifference((HandledScreen<ScreenHandler>) MinecraftClient.getInstance().currentScreen, slotId, false);
         int otherSlot = BindSlots.INSTANCE.getBindedSlot(slotId);
         if (otherSlot == slotId) return;
-        System.out.println("" + slotId + " " + otherSlot);
         // check if shift is held down
         if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT)) {
             // swap the slots in the inventory
             Slot slot = handler.slots.get(originalSlotId);
             Slot slot2 = handler.slots.get(LockSlots.INSTANCE.getSlotDifference((HandledScreen<ScreenHandler>) MinecraftClient.getInstance().currentScreen, otherSlot, true));
-            ItemStack itemStack = slot.getStack();
-            ItemStack itemStack2 = slot2.getStack();
-//            slot.setStack(itemStack2);
-//            slot2.setStack(itemStack);
             if (otherSlot == 36 || slotId == 36) {
                 if (otherSlot == 36)
                     MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);

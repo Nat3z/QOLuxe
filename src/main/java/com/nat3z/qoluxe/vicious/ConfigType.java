@@ -6,5 +6,6 @@ public enum ConfigType {
     COLOR_WHEEL,
     EDIT,
     SLIDER_TEXT,
-    HUD
+    HUD,
+    RUNNABLE,
 }

@@ -254,9 +254,7 @@ object ModAssistantHook {
             ex.printStackTrace()
             return false
         }
-
         return true
-
     }
 
     private fun isRedirected(header: Map<String, List<String>>): Boolean {

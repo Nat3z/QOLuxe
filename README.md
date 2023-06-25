@@ -26,4 +26,4 @@ These files are open-source and can be self-compiled. You can find the source co
 - https://github.com/Nat3z/ModAssistant/
 - https://github.com/Nat3z/CloudSaveProvider
 
-These Jar files are in the directory: `{Minecraft Run Directory}/vicious/`
+These jar files are in the directory: `{Minecraft Run Directory}/vicious/`
