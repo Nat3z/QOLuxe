@@ -3,22 +3,8 @@ package com.nat3z.qoluxe.hooks
 import com.nat3z.qoluxe.QOLuxeConfig
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.screen.ingame.AbstractFurnaceScreen
-import net.minecraft.client.gui.screen.ingame.AnvilScreen
-import net.minecraft.client.gui.screen.ingame.BlastFurnaceScreen
-import net.minecraft.client.gui.screen.ingame.CartographyTableScreen
-import net.minecraft.client.gui.screen.ingame.CraftingScreen
-import net.minecraft.client.gui.screen.ingame.EnchantmentScreen
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen
-import net.minecraft.client.gui.screen.ingame.GrindstoneScreen
-import net.minecraft.client.gui.screen.ingame.HandledScreen
-import net.minecraft.client.gui.screen.ingame.HopperScreen
-import net.minecraft.client.gui.screen.ingame.HorseScreen
-import net.minecraft.client.gui.screen.ingame.InventoryScreen
-import net.minecraft.client.gui.screen.ingame.LoomScreen
-import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen
-import net.minecraft.client.gui.screen.ingame.SmithingScreen
-import net.minecraft.client.gui.screen.ingame.StonecutterScreen
+import net.minecraft.client.gui.screen.ingame.*
+import net.minecraft.entity.passive.AbstractDonkeyEntity
 import net.minecraft.screen.GenericContainerScreenHandler
 import net.minecraft.screen.ScreenHandler
 import java.util.*
@@ -66,8 +52,15 @@ object LockSlots {
             return 1
         else if (currentScreen is CartographyTableScreen)
             return 2
-        else if (currentScreen is HorseScreen)
+        else if (currentScreen is HorseScreen) {
+            MinecraftClient.getInstance().player?.vehicle?.let {
+                if (it is AbstractDonkeyEntity) {
+                    return if (it.hasChest()) 16 else 0
+                }
+            }
             return 1
+        }
+
         return 0
     }
 
@@ -76,7 +69,6 @@ object LockSlots {
         var armorOffset = 8
 
         if (currentScreen is InventoryScreen) armorOffset = 0
-
         return if (!getRelativeToContainer)
                 (focusedSlotId - containerOffset) + armorOffset
         else (focusedSlotId + containerOffset) - armorOffset

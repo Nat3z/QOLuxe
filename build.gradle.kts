@@ -14,7 +14,7 @@ java {
 }
 
 group = "com.nat3z.qoluxe"
-version = "1.0.4"
+version = "1.0.6"
 
 val shadowImpl: Configuration by configurations.creating {
     configurations.implementation.get().extendsFrom(this)

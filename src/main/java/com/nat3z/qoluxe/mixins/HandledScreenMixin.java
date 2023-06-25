@@ -76,26 +76,28 @@ public class HandledScreenMixin {
                             }
                         }
                     }
-//                if (focusedSlot != null) {
-//                    context.fillGradient(
-//                            RenderLayer.getGuiOverlay(),
-//                            focusedSlot.x,
-//                            focusedSlot.y,
-//                            focusedSlot.x + 16,
-//                            focusedSlot.y + 16,
-//                            0x80ff0000,
-//                            0x80ff0000,
-//                            0
-//                    );
-//                    context.drawText(MinecraftClient.getInstance().textRenderer,
-//                            focusedSlot.id + "",
-//                            focusedSlot.x + 8 - MinecraftClient.getInstance().textRenderer.getWidth(focusedSlot.id + "") / 2,
-//                            focusedSlot.y + 8 - MinecraftClient.getInstance().textRenderer.fontHeight / 2,
-//                            0xffffffff, false);
-//                }
-
+                if (focusedSlot != null) {
+                    context.fillGradient(
+                            RenderLayer.getGuiOverlay(),
+                            focusedSlot.x,
+                            focusedSlot.y,
+                            focusedSlot.x + 16,
+                            focusedSlot.y + 16,
+                            0x80ff0000,
+                            0x80ff0000,
+                            0
+                    );
+                    context.drawText(MinecraftClient.getInstance().textRenderer,
+                            focusedSlot.id + "",
+                            focusedSlot.x + 8 - MinecraftClient.getInstance().textRenderer.getWidth(focusedSlot.id + "") / 2,
+                            focusedSlot.y + 8 - MinecraftClient.getInstance().textRenderer.fontHeight / 2,
+                            0xffffffff, false);
+                }
+                if (currentScreen instanceof CreativeInventoryScreen) return;
                 for (int lockedSlot : LockSlots.INSTANCE.getLockedSlots()) {
                     if (lockedSlot >= 0) {
+                        if (lockedSlot > 45 && currentScreen instanceof InventoryScreen) lockedSlot -= 45;
+
                         drawOntoSlot(context, currentScreen, 0x80ff0000, lockedSlot);
                     }
                 }
@@ -107,15 +109,16 @@ public class HandledScreenMixin {
                 for (Pair<Integer, Integer> binds : BindSlots.INSTANCE.getSlotBinds()) {
                     if (BindSlots.INSTANCE.getSlotBindingColors().size() < amountOfBinds + 1)
                         continue;
+                    if ((binds.component1() < 8 || binds.component2() < 8) && !(currentScreen instanceof InventoryScreen)) continue;
                     long bindColor = BindSlots.INSTANCE.getSlotBindingColors().get(amountOfBinds);
                     int firstSlot = binds.component1();
                     int secondSlot = binds.component2();
                     if (firstSlot >= 0) {
-                        if (firstSlot > 45 && currentScreen instanceof InventoryScreen) {
+                        if (currentScreen instanceof InventoryScreen && firstSlot > 45) {
                             firstSlot -= 45;
                         }
 
-                        if (secondSlot > 45 && currentScreen instanceof InventoryScreen) {
+                        if (currentScreen instanceof InventoryScreen && secondSlot > 45) {
                             secondSlot -= 45;
                         }
 
@@ -132,8 +135,9 @@ public class HandledScreenMixin {
     }
 
     private boolean drawOntoSlot(DrawContext context, Screen currentScreen, int bindColor, int secondSlot) {
+        if (currentScreen instanceof CreativeInventoryScreen) return true;
         int slotIdSecond = LockSlots.INSTANCE.getSlotDifference((HandledScreen<ScreenHandler>) currentScreen, secondSlot, true);
-        if (slotIdSecond > ((HandledScreen<?>) currentScreen).getScreenHandler().slots.size()) {
+        if (slotIdSecond > ((HandledScreen<?>) currentScreen).getScreenHandler().slots.size() || slotIdSecond < 0) {
             return true;
         }
         Slot slot2 = handler.slots.get(slotIdSecond);
@@ -153,14 +157,18 @@ public class HandledScreenMixin {
     @Inject(at = @At("HEAD"), method = "mouseClicked", cancellable = true)
     private void mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (focusedSlot == null) return;
+        if (MinecraftClient.getInstance().currentScreen instanceof CreativeInventoryScreen) return;
         if (checkIfSlotIsLocked(focusedSlot.id)) cir.setReturnValue(true);
-        getBindedSlot(focusedSlot.id, cir);
+
+        int slotId = focusedSlot.id;
+        getBindedSlot(slotId, cir);
     }
 
     @Inject(at = @At("HEAD"), method = "keyPressed", cancellable = true)
     private void keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (focusedSlot == null) return;
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) return;
+        if (MinecraftClient.getInstance().currentScreen instanceof CreativeInventoryScreen) return;
 
         if (checkIfSlotIsLocked(focusedSlot.id)) cir.setReturnValue(true);
     }
@@ -177,18 +185,46 @@ public class HandledScreenMixin {
     }
 
     private void getBindedSlot(int slotId, CallbackInfo ci) {
+        if (MinecraftClient.getInstance().currentScreen instanceof CreativeInventoryScreen) return;
+
         if (!MinecraftClient.getInstance().isConnectedToRealms() && !MinecraftClient.getInstance().isConnectedToLocalServer())
             if (!QOLuxeConfig.allowExternalSlotBinding) return;
 
         int originalSlotId = slotId;
+        if (MinecraftClient.getInstance().currentScreen instanceof InventoryScreen && slotId >= 5 && slotId <= 8) {
+            // make the armor slots above 45 to make them not appear in chests and stuff
+            slotId += 45;
+        }
         slotId = LockSlots.INSTANCE.getSlotDifference((HandledScreen<ScreenHandler>) MinecraftClient.getInstance().currentScreen, slotId, false);
         int otherSlot = BindSlots.INSTANCE.getBindedSlot(slotId);
+        if (MinecraftClient.getInstance().currentScreen instanceof InventoryScreen && slotId > 45) {
+            // make the armor slots above 45 to make them not appear in chests and stuff
+            slotId -= 45;
+        }
+        if (MinecraftClient.getInstance().currentScreen instanceof InventoryScreen && otherSlot > 45) {
+            otherSlot -= 45;
+        }
         if (otherSlot == slotId) return;
         // check if shift is held down
         if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT)) {
             // swap the slots in the inventory
+            if (originalSlotId > ((HandledScreen<?>) MinecraftClient.getInstance().currentScreen).getScreenHandler().slots.size() || originalSlotId < 0) {
+                if (ci instanceof CallbackInfoReturnable<?>)
+                    ((CallbackInfoReturnable<Boolean>) ci).setReturnValue(true);
+                else
+                    ci.cancel();
+                return;
+            }
+            int otherSlotRaw = LockSlots.INSTANCE.getSlotDifference((HandledScreen<ScreenHandler>) MinecraftClient.getInstance().currentScreen, otherSlot, true);
+            if (otherSlotRaw > ((HandledScreen<?>) MinecraftClient.getInstance().currentScreen).getScreenHandler().slots.size() || otherSlotRaw < 0) {
+                if (ci instanceof CallbackInfoReturnable<?>)
+                    ((CallbackInfoReturnable<Boolean>) ci).setReturnValue(true);
+                else
+                    ci.cancel();
+                return;
+            }
             Slot slot = handler.slots.get(originalSlotId);
-            Slot slot2 = handler.slots.get(LockSlots.INSTANCE.getSlotDifference((HandledScreen<ScreenHandler>) MinecraftClient.getInstance().currentScreen, otherSlot, true));
+            Slot slot2 = handler.slots.get(otherSlotRaw);
             if (otherSlot == 36 || slotId == 36) {
                 if (otherSlot == 36)
                     MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);
@@ -196,10 +232,18 @@ public class HandledScreenMixin {
                     MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot2.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);
             }
             else {
-                MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);
-                MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot2.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);
-                MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);
+                if (BindSlots.INSTANCE.isSlotTheSecondary(slotId >= 5 && slotId <= 8 && MinecraftClient.getInstance().currentScreen instanceof InventoryScreen ? slotId + 45 : slotId)) {
+                    MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot2.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);
+                    MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);
+                    MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot2.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);
+                }
+                else {
+                    MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);
+                    MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot2.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);
+                    MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slot.id, 0, SlotActionType.SWAP, MinecraftClient.getInstance().player);
+                }
             }
+
             if (ci instanceof CallbackInfoReturnable<?>)
                 ((CallbackInfoReturnable<Boolean>) ci).setReturnValue(true);
             else
@@ -215,11 +259,17 @@ public class HandledScreenMixin {
     }
 
     @Inject(at = @At("HEAD"), method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V", cancellable = true)
-    private void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo ci) {
+    private void onMouseClick(Slot slot, int slotIdRaw, int button, SlotActionType actionType, CallbackInfo ci) {
         if (slot == null) return;
+        if (MinecraftClient.getInstance().currentScreen instanceof CreativeInventoryScreen) return;
 
         if (checkIfSlotIsLocked(slot.id)) ci.cancel();
-        getBindedSlot(slot.id, ci);
 
+        int slotId = slot.id;
+        if (MinecraftClient.getInstance().currentScreen instanceof InventoryScreen && slotId >= 5 && slotId <= 8) {
+            // make the armor slots above 45 to make them not appear in chests and stuff
+            slotId += 45;
+        }
+        getBindedSlot(slotId, ci);
     }
 }

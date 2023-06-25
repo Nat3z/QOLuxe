@@ -28,6 +28,8 @@ public class ClientPlayerEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "dropSelectedItem", cancellable = true)
     private void dropSelectedItem(boolean entireStack, CallbackInfoReturnable<Boolean> cir) {
+        if (MinecraftClient.getInstance().player.isCreative()) return;
+
         if (!(MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?>) &&
                 LockSlots.INSTANCE.isSlotLocked((MinecraftClient.getInstance().player.getInventory().selectedSlot + 36))
         ) {
@@ -45,6 +47,10 @@ public class ClientPlayerEntityMixin {
             int slotToSwap = BindSlots.INSTANCE.getBindedSlot(
                     MinecraftClient.getInstance().player.getInventory().selectedSlot + 36
             );
+            if (slotToSwap > 45) slotToSwap -= 45;
+
+            if (slotToSwap > 46 || slotToSwap < 0) return;
+
             if (MinecraftClient.getInstance().player.getInventory().selectedSlot == 0) {
                 MinecraftClient.getInstance().interactionManager.clickSlot(
                         MinecraftClient.getInstance().player.playerScreenHandler.syncId,

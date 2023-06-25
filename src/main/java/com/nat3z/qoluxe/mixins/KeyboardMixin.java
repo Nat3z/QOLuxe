@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Keyboard.class)
 public class KeyboardMixin {
-
+    private boolean isUserDevotedToLockSlots = false;
     @Inject(method = "onKey", at = @At("HEAD"))
     private void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
         // check if it's a keypress and if the lock slot key is pressed
@@ -26,22 +26,40 @@ public class KeyboardMixin {
 
         // check if it's a key release and if the lock slot key is pressed
         if (action == 0 && BindSlots.INSTANCE.getStartSlotLockingProcess()) {
+            if (!isUserDevotedToLockSlots) {
+                return;
+            }
             BindSlots.INSTANCE.setStartSlotLockingProcess(false);
             assert MinecraftClient.getInstance().player != null;
             assert MinecraftClient.getInstance().currentScreen != null;
             if (SlotUtils.INSTANCE.getHoveredSlotId() == -1) return;
             if (SlotUtils.INSTANCE.getHoveredSlotId() == BindSlots.INSTANCE.getInitialSlotToBind()) return;
-            int slotWithOffset = LockSlots.INSTANCE.getSlotDifference((HandledScreen<net.minecraft.screen.ScreenHandler>) MinecraftClient.getInstance().currentScreen, SlotUtils.INSTANCE.getHoveredSlotId(), false);
+            int slotId = SlotUtils.INSTANCE.getHoveredSlotId();
+            if (MinecraftClient.getInstance().currentScreen instanceof InventoryScreen && slotId >= 5 && slotId <= 8) {
+                // make the armor slots above 45 to make them not appear in chests and stuff
+                slotId += 45;
+            }
+            int slotWithOffset = LockSlots.INSTANCE.getSlotDifference((HandledScreen<net.minecraft.screen.ScreenHandler>) MinecraftClient.getInstance().currentScreen, slotId, false);
             LockSlots.INSTANCE.removeSlotFromLock(BindSlots.INSTANCE.getInitialSlotToBind());
             BindSlots.INSTANCE.bindSlots(slotWithOffset);
         }
+        if (action == 2 && BindSlots.INSTANCE.getStartSlotLockingProcess() && QOLuxe.getLockSlot().matchesKey(key, scancode)) {
+            isUserDevotedToLockSlots = true;
+        }
         if (action == 1 && QOLuxe.getLockSlot().matchesKey(key, scancode) && MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?> && !BindSlots.INSTANCE.getStartSlotLockingProcess()) {
             if (SlotUtils.INSTANCE.getHoveredSlotId() == -1) return;
-            int slotWithOffset = LockSlots.INSTANCE.getSlotDifference((HandledScreen<net.minecraft.screen.ScreenHandler>) MinecraftClient.getInstance().currentScreen, SlotUtils.INSTANCE.getHoveredSlotId(), false);
+            int slotId = SlotUtils.INSTANCE.getHoveredSlotId();
+            if (MinecraftClient.getInstance().currentScreen instanceof InventoryScreen && slotId >= 5 && slotId <= 8) {
+                // make the armor slots above 45 to make them not appear in chests and stuff
+                slotId += 45;
+            }
+
+            int slotWithOffset = LockSlots.INSTANCE.getSlotDifference((HandledScreen<net.minecraft.screen.ScreenHandler>) MinecraftClient.getInstance().currentScreen, slotId, false);
             if (BindSlots.INSTANCE.getBindedSlot(slotWithOffset) != slotWithOffset) {
                 BindSlots.INSTANCE.unbindSlots(slotWithOffset);
                 return;
             }
+
             BindSlots.INSTANCE.setStartSlotLockingProcess(true);
             BindSlots.INSTANCE.setInitialSlot(slotWithOffset);
         }
