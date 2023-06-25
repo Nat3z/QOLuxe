@@ -62,5 +62,7 @@ class QOLuxe : ClientModInitializer {
         val lockSlot = KeyBinding("Lock Slot", InputUtil.GLFW_KEY_C, "QOLuxe")
         @JvmStatic
         var currentClientWorldName: String? = null
+        @JvmStatic
+        var isConnectedToRealms = false
     }
 }

@@ -51,7 +51,7 @@ public class SelectWorldScreenMixin extends Screen {
         });
         this.downloadAllCloudSavesButton = ButtonWidget.builder(Text.of("Pull from Cloud"), (button) -> {
             MinecraftClient.getInstance().setScreenAndRender(new OverrideWarningCloud());
-        }).dimensions(10, 22, 150, 20).build();
+        }).dimensions(10, 22, 120, 20).build();
         this.cloudSaveButton.active = false;
         this.addDrawableChild(this.cloudSaveButton);
         this.addDrawableChild(this.downloadAllCloudSavesButton);

@@ -47,7 +47,6 @@ public class ViciousMod {
                 try {
                     Configurable config = (Configurable)variable.getAnnotation(Configurable.class);
                     List<Object> defined = new ArrayList<>();
-                    defined.add(config.description());
                     if (config.type() == ConfigType.HUD) {
                         HudElement hudElement = (HudElement) variable.get(getConfig());
                         defined.add(hudElement.toList());
@@ -84,9 +83,9 @@ public class ViciousMod {
                     Configurable config = variable.getAnnotation(Configurable.class);
 
                     if (data.containsKey(config.name()) && config.type() == ConfigType.HUD)
-                        variable.set(config, new HudElement((List<Integer>)((List<Object>)data.get(config.name())).get(1)));
+                        variable.set(config, new HudElement((List<Integer>)((List<Object>)data.get(config.name())).get(0)));
                     else if (data.containsKey(config.name()))
-                        variable.set(config, ((List<Object>)data.get(config.name())).get(1));
+                        variable.set(config, ((List<Object>)data.get(config.name())).get(0));
                 }
             }
         } catch (FileNotFoundException | IllegalAccessException e) {

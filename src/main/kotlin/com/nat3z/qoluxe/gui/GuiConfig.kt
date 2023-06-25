@@ -3,6 +3,7 @@ package com.nat3z.qoluxe.gui
 import com.nat3z.qoluxe.QOLuxe
 import com.nat3z.qoluxe.QOLuxeConfig
 import com.nat3z.qoluxe.vicious.ConfigType
+import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.tooltip.Tooltip
@@ -59,6 +60,7 @@ class GuiConfig : Screen(Text.of("QOLuxe Config")) {
         val pageForward = ButtonWidget.builder(Text.of(">")) { button: ButtonWidget ->
             goForwardPage()
         }.width(25).build()
+
         pageBack.active = canGoBack
         pageForward.active = canGoForward
         adder.add(pageBack, 1, gridWidget.copyPositioner().marginTop(10).marginLeft(78))
@@ -115,8 +117,8 @@ class GuiConfig : Screen(Text.of("QOLuxe Config")) {
                 ) { button: ButtonWidget ->
                     configItem.field.set(QOLuxe.viciousExt.config, !(configItem.field.getBoolean(QOLuxe.viciousExt.config)))
                     button.message = Text.of(configItem.name + ": " + if (configItem.field.getBoolean(QOLuxe.viciousExt.config)) "${Formatting.GREEN}Enabled" else "${Formatting.RED}Disabled")
-                }.width(204).build()
-                button.tooltip = Tooltip.of(Text.of(configItem.description))
+                }.tooltip(Tooltip.of(Text.of(configItem.description))).width(204).build()
+                // check if the user is currently connected to the realms and disable the button if they are
                 button.visible = false
                 item = button
             }

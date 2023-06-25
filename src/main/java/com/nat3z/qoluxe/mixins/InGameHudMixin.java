@@ -1,7 +1,10 @@
 package com.nat3z.qoluxe.mixins;
 
 import com.nat3z.qoluxe.QOLuxeConfig;
+import com.nat3z.qoluxe.hooks.BindSlots;
 import com.nat3z.qoluxe.hooks.LockSlots;
+import kotlin.Pair;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,6 +36,18 @@ public class InGameHudMixin {
     private void renderHotbarItem(DrawContext context, int x, int y, float f, PlayerEntity player, ItemStack stack, int seed, CallbackInfo ci) {
         if (LockSlots.INSTANCE.isSlotLocked(hotbarSlotIndex)) {
             context.fillGradient(x, y, x + 16, y + 16, 0x80ff0000, 0x80ff0000);
+        }
+        if (!MinecraftClient.getInstance().isConnectedToRealms() && !MinecraftClient.getInstance().isConnectedToLocalServer())
+            if (!QOLuxeConfig.allowExternalSlotBinding) return;
+        int amountOfBinds = 0;
+        for (Pair<Integer, Integer> bind : BindSlots.INSTANCE.getSlotBinds()) {
+            if (BindSlots.INSTANCE.getSlotBindingColors().size() < amountOfBinds + 1)
+                continue;
+            long bindColor = BindSlots.INSTANCE.getSlotBindingColors().get(amountOfBinds);
+            if (bind.component1() == hotbarSlotIndex || bind.component2() == hotbarSlotIndex) {
+                context.fillGradient(x, y, x + 16, y + 16, (int) bindColor, (int) bindColor);
+            }
+            amountOfBinds++;
         }
         hotbarSlotIndex++;
     }

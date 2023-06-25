@@ -1,7 +1,9 @@
 package com.nat3z.qoluxe.mixins;
 
 import com.nat3z.qoluxe.QOLuxe;
+import com.nat3z.qoluxe.hooks.BindSlots;
 import com.nat3z.qoluxe.hooks.LockSlots;
+import com.nat3z.qoluxe.utils.SlotUtils;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -17,14 +19,31 @@ public class KeyboardMixin {
     @Inject(method = "onKey", at = @At("HEAD"))
     private void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
         // check if it's a keypress and if the lock slot key is pressed
-        if (!LockSlots.INSTANCE.getAlreadyClicked() && QOLuxe.getLockSlot().matchesKey(key, scancode) && MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?>) {
+        if (action == 1 && QOLuxe.getLockSlot().matchesKey(key, scancode) && MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?>) {
             LockSlots.INSTANCE.setLockHoveredSlot(true);
             LockSlots.INSTANCE.setAlreadyClicked(true);
         }
 
-        // check if the lock slot key is released
-        if (action == 0 && LockSlots.INSTANCE.getAlreadyClicked()) {
-            LockSlots.INSTANCE.setAlreadyClicked(false);
+        // check if it's a key release and if the lock slot key is pressed
+        if (action == 0 && BindSlots.INSTANCE.getStartSlotLockingProcess()) {
+            BindSlots.INSTANCE.setStartSlotLockingProcess(false);
+            assert MinecraftClient.getInstance().player != null;
+            assert MinecraftClient.getInstance().currentScreen != null;
+            if (SlotUtils.INSTANCE.getHoveredSlotId() == -1) return;
+            if (SlotUtils.INSTANCE.getHoveredSlotId() == BindSlots.INSTANCE.getInitialSlotToBind()) return;
+            int slotWithOffset = LockSlots.INSTANCE.getSlotDifference((HandledScreen<net.minecraft.screen.ScreenHandler>) MinecraftClient.getInstance().currentScreen, SlotUtils.INSTANCE.getHoveredSlotId(), false);
+            LockSlots.INSTANCE.removeSlotFromLock(BindSlots.INSTANCE.getInitialSlotToBind());
+            BindSlots.INSTANCE.bindSlots(slotWithOffset);
+        }
+        if (action == 1 && QOLuxe.getLockSlot().matchesKey(key, scancode) && MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?> && !BindSlots.INSTANCE.getStartSlotLockingProcess()) {
+            if (SlotUtils.INSTANCE.getHoveredSlotId() == -1) return;
+            int slotWithOffset = LockSlots.INSTANCE.getSlotDifference((HandledScreen<net.minecraft.screen.ScreenHandler>) MinecraftClient.getInstance().currentScreen, SlotUtils.INSTANCE.getHoveredSlotId(), false);
+            if (BindSlots.INSTANCE.getBindedSlot(slotWithOffset) != slotWithOffset) {
+                BindSlots.INSTANCE.unbindSlots(slotWithOffset);
+                return;
+            }
+            BindSlots.INSTANCE.setStartSlotLockingProcess(true);
+            BindSlots.INSTANCE.setInitialSlot(slotWithOffset);
         }
     }
 }

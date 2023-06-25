@@ -45,7 +45,7 @@ object MinecraftHook {
             }
         }
         var modsFolder = File(".\\mods\\")
-        val subMods = File(".\\mods\\1.8.9\\")
+        val subMods = File(".\\mods\\1.20.1\\")
 
         if (subMods.exists()) {
             modsFolder = subMods
@@ -54,7 +54,7 @@ object MinecraftHook {
         /* check for updates & auto update */
         val finalModsFolder = modsFolder
         fetch("https://api.github.com/repos/Nat3z/$modName/releases") { res ->
-            if (QOLuxe.VERSION != res.asJsonArray().get(0).getAsJsonObject().get("tag_name").getAsString()) {
+            if (QOLuxe.VERSION != res.asJsonArray().get(0).asJsonObject.get("tag_name").asString) {
                 /* update that mod! */
                 QOLuxe.LOGGER.info("Applying update to $modName...")
                 fetch("https://api.github.com/repos/Nat3z/$modName/releases") { res1 ->
@@ -73,7 +73,7 @@ object MinecraftHook {
                     var updateAs = ""
                     /* for glass mod implementation */
                     for (file in finalModsFolder.listFiles()!!) {
-                        if (file.name.startsWith("$modName")) {
+                        if (file.name.startsWith(modName)) {
                             updateAs = file.name
                             break
                         }

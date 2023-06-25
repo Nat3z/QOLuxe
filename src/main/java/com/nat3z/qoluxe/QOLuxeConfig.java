@@ -3,6 +3,7 @@ package com.nat3z.qoluxe;
 import com.nat3z.qoluxe.vicious.ConfigType;
 import com.nat3z.qoluxe.vicious.Configurable;
 import com.nat3z.qoluxe.vicious.ViciousConfig;
+import net.minecraft.util.Formatting;
 
 public class QOLuxeConfig implements ViciousConfig {
 
@@ -24,6 +25,17 @@ public class QOLuxeConfig implements ViciousConfig {
             type = ConfigType.INPUT_FIELD
     )
     public static String animalsToNotRender = "Sheep";
+
+    @Configurable(
+            name = "Allow Slot Binding Externally",
+            description = "If enabled, this will enable slot binding on other servers other than singleplayer and realms.\n\n" +
+                    "§cThis is not recommended as it can cause issues with server anticheats and is (technically) modifying vanilla actions, which can be considered cheating.",
+            category = "Inventory",
+            hidden = false,
+            subCategory = "Slots",
+            type = ConfigType.TOGGLE
+    )
+    public static boolean allowExternalSlotBinding = false;
     @Configurable(
             name = "Locked Slots",
             description = "Slots that are locked",
@@ -33,6 +45,16 @@ public class QOLuxeConfig implements ViciousConfig {
             type = ConfigType.INPUT_FIELD
     )
     public static String lockedSlots = "";
+
+    @Configurable(
+            name = "Bind Slots",
+            description = "Slots that are binded together",
+            category = "Inventory",
+            hidden = true,
+            subCategory = "Slots",
+            type = ConfigType.INPUT_FIELD
+    )
+    public static String slotBinding = "";
 
     @Configurable(
             name = "Cloud Save",

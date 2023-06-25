@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.ingame.GenericContainerScreen
 import net.minecraft.client.gui.screen.ingame.GrindstoneScreen
 import net.minecraft.client.gui.screen.ingame.HandledScreen
 import net.minecraft.client.gui.screen.ingame.HopperScreen
+import net.minecraft.client.gui.screen.ingame.HorseScreen
 import net.minecraft.client.gui.screen.ingame.InventoryScreen
 import net.minecraft.client.gui.screen.ingame.LoomScreen
 import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen
@@ -65,11 +66,13 @@ object LockSlots {
             return 1
         else if (currentScreen is CartographyTableScreen)
             return 2
+        else if (currentScreen is HorseScreen)
+            return 1
         return 0
     }
 
-    fun getSlotDifference(currentScreen: HandledScreen<ScreenHandler>, focusedSlotId: Int, getRelativeToContainer: Boolean = false): Int {
-        val containerOffset = getSlotsOccupiedByContainer(currentScreen)
+    fun getSlotDifference(currentScreen: HandledScreen<ScreenHandler>?, focusedSlotId: Int, getRelativeToContainer: Boolean = false): Int {
+        val containerOffset = if (currentScreen != null) getSlotsOccupiedByContainer(currentScreen) else 0
         var armorOffset = 8
 
         if (currentScreen is InventoryScreen) armorOffset = 0
