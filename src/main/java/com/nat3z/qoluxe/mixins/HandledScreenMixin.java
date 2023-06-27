@@ -76,23 +76,23 @@ public class HandledScreenMixin {
                             }
                         }
                     }
-                if (focusedSlot != null) {
-                    context.fillGradient(
-                            RenderLayer.getGuiOverlay(),
-                            focusedSlot.x,
-                            focusedSlot.y,
-                            focusedSlot.x + 16,
-                            focusedSlot.y + 16,
-                            0x80ff0000,
-                            0x80ff0000,
-                            0
-                    );
-                    context.drawText(MinecraftClient.getInstance().textRenderer,
-                            focusedSlot.id + "",
-                            focusedSlot.x + 8 - MinecraftClient.getInstance().textRenderer.getWidth(focusedSlot.id + "") / 2,
-                            focusedSlot.y + 8 - MinecraftClient.getInstance().textRenderer.fontHeight / 2,
-                            0xffffffff, false);
-                }
+//                if (focusedSlot != null) {
+//                    context.fillGradient(
+//                            RenderLayer.getGuiOverlay(),
+//                            focusedSlot.x,
+//                            focusedSlot.y,
+//                            focusedSlot.x + 16,
+//                            focusedSlot.y + 16,
+//                            0x80ff0000,
+//                            0x80ff0000,
+//                            0
+//                    );
+//                    context.drawText(MinecraftClient.getInstance().textRenderer,
+//                            focusedSlot.id + "",
+//                            focusedSlot.x + 8 - MinecraftClient.getInstance().textRenderer.getWidth(focusedSlot.id + "") / 2,
+//                            focusedSlot.y + 8 - MinecraftClient.getInstance().textRenderer.fontHeight / 2,
+//                            0xffffffff, false);
+//                }
                 if (currentScreen instanceof CreativeInventoryScreen) return;
                 for (int lockedSlot : LockSlots.INSTANCE.getLockedSlots()) {
                     if (lockedSlot >= 0) {

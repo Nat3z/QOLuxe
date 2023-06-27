@@ -48,7 +48,7 @@ public class IntegratedServerLoaderMixin {
         QOLuxe.setCurrentClientWorldName(levelName);
         if (CloudProvider.INSTANCE.getOpenCloudSaveConfig() && QOLuxeConfig.cloudSaveLocation.isEmpty()) {
             CloudProvider.INSTANCE.setOpenCloudSaveConfig(false);
-            MinecraftClient.getInstance().setScreenAndRender(new SelectCloudSaveFolder(levelName, Objects.requireNonNull(CloudProvider.INSTANCE.getWorldEntryForSelected())));
+            MinecraftClient.getInstance().setScreenAndRender(new SelectCloudSaveFolder(new CloudSaveManagement(levelName, Objects.requireNonNull(CloudProvider.INSTANCE.getWorldEntryForSelected()))));
             ci.cancel();
             return;
         }

@@ -1,6 +1,7 @@
 package com.nat3z.qoluxe.gui;
 
 import com.nat3z.qoluxe.QOLuxe
+import com.nat3z.qoluxe.QOLuxeConfig
 import com.nat3z.qoluxe.utils.CloudProvider
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
@@ -26,6 +27,10 @@ public class OverrideWarningCloud : Screen(Text.of("Override Cloud Save")) {
     }
 
     override fun init() {
+        if (QOLuxeConfig.cloudSaveLocation.isEmpty()) {
+            MinecraftClient.getInstance().setScreenAndRender(SelectCloudSaveFolder(this))
+            return
+        }
         val gridWidget = GridWidget()
         gridWidget.mainPositioner.margin(4, 4, 4, 0)
         val adder = gridWidget.createAdder(2)

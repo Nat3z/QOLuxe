@@ -12,7 +12,8 @@
     "KeyboardMixin",
     "MinecraftClientMixin",
     "MobEntityRendererMixin",
-    "SelectWorldScreenMixin"
+    "SelectWorldScreenMixin",
+    "TitleScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

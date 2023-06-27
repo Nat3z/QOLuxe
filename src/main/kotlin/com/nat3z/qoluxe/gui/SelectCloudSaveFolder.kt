@@ -16,7 +16,7 @@ import net.minecraft.util.Formatting
 import java.io.File
 import javax.swing.JFileChooser
 
-class SelectCloudSaveFolder(val worldName: String, val worldEntry: WorldEntry) : Screen(Text.of("Select Cloud Save Folder")) {
+class SelectCloudSaveFolder(private val parent: Screen) : Screen(Text.of("Select Cloud Save Folder")) {
     var showingCloudSaveFolder = false;
     val gridWidget = GridWidget()
     var error = "";
@@ -25,11 +25,11 @@ class SelectCloudSaveFolder(val worldName: String, val worldEntry: WorldEntry) :
         super.renderBackground(context)
         super.render(context, mouseX, mouseY, delta)
         if (context == null) return
-        context.drawCenteredTextWithShadow(textRenderer, Text.of("${Formatting.RED}$error"), width / 2, gridWidget.y + 30, 0xFFFFFF)
-        context.drawCenteredTextWithShadow(textRenderer, Text.of("Select Cloud Save Folder"), width / 2, gridWidget.y + 50, 0xFFFFFF)
-        context.drawCenteredTextWithShadow(textRenderer, Text.of("${Formatting.UNDERLINE}Tips"), width / 2, gridWidget.y + 140, 0xFFFFFF)
-        context.drawCenteredTextWithShadow(textRenderer, Text.of("If you are using ${Formatting.YELLOW}Google Drive Desktop${Formatting.RESET}, insert \"G:\\My Drive\\Minecraft\\\""), width / 2, gridWidget.y + 160, 0xFFFFFF)
-        context.drawCenteredTextWithShadow(textRenderer, Text.of("If you are using ${Formatting.YELLOW}OneDrive Desktop${Formatting.RESET}, insert \"C:\\Users\\{Desktop Username}\\OneDrive\\Minecraft\\\""), width / 2, gridWidget.y + 170, 0xFFFFFF)
+        context.drawCenteredTextWithShadow(textRenderer, Text.of("${Formatting.RED}$error"), width / 2, gridWidget.y, 0xFFFFFF)
+        context.drawCenteredTextWithShadow(textRenderer, Text.of("Select Cloud Save Folder"), width / 2, gridWidget.y + 20, 0xFFFFFF)
+        context.drawCenteredTextWithShadow(textRenderer, Text.of("${Formatting.UNDERLINE}Tips"), width / 2, gridWidget.y + 100, 0xFFFFFF)
+        context.drawCenteredTextWithShadow(textRenderer, Text.of("If you are using ${Formatting.YELLOW}Google Drive Desktop${Formatting.RESET}, insert \"G:\\My Drive\\Minecraft\\\""), width / 2, gridWidget.y + 120, 0xFFFFFF)
+        context.drawCenteredTextWithShadow(textRenderer, Text.of("If you are using ${Formatting.YELLOW}OneDrive Desktop${Formatting.RESET}, insert \"C:\\Users\\{Desktop Username}\\OneDrive\\Minecraft\\\""), width / 2, gridWidget.y + 130, 0xFFFFFF)
     }
 
     override fun close() {
@@ -42,21 +42,23 @@ class SelectCloudSaveFolder(val worldName: String, val worldEntry: WorldEntry) :
         val adder = gridWidget.createAdder(2)
         var textArea = TextFieldWidget(textRenderer, 0, 0, 200, 20, Text.of(""))
         textArea.text = QOLuxeConfig.cloudSaveLocation
-        adder.add(textArea, 2, gridWidget.copyPositioner().marginTop(70))
+        adder.add(textArea, 2, gridWidget.copyPositioner().marginTop(40))
         adder.add(ButtonWidget.builder(Text.of("Confirm")) {
             try {
                 var folder = File(textArea.text)
+                System.out.println(folder.isDirectory)
+                error = ""
                 if (!folder.exists())
-                    folder.mkdirs()
-                if (!folder.isDirectory) {
+                    error = "The path you entered does not exist."
+                else if (!folder.isDirectory) {
                     error = "The path you entered is not a folder."
                 }
 
                 if (error == "") {
                     QOLuxeConfig.cloudSaveLocation = folder.absolutePath
                     QOLuxe.viciousExt.saveConfig()
+                    MinecraftClient.getInstance().setScreenAndRender(parent)
                 }
-                MinecraftClient.getInstance().setScreenAndRender(CloudSaveManagement(worldName, worldEntry))
             } catch (e: Exception) {
                 error = e.message ?: "Unknown error"
             }

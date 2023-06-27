@@ -63,9 +63,9 @@ class CloudSaveManagement(val worldName: String, val worldEntry: WorldEntry) : S
                 CloudProvider.scheduledResolveSaveConflict = true
                 MinecraftClient.getInstance().setScreenAndRender(null)
                 worldEntry.play()
-            }.dimensions(0, 0, 213, 20).build(), 2, gridWidget.copyPositioner().marginTop(100))
+            }.dimensions(0, 0, 213, 20).build(), 2, gridWidget.copyPositioner().marginTop(90))
         else
-            MinecraftClient.getInstance().setScreenAndRender(SelectCloudSaveFolder(worldName, worldEntry))
+            MinecraftClient.getInstance().setScreenAndRender(SelectCloudSaveFolder(this))
 
         // -- what to do with cloud saves --
         adder.add(ButtonWidget.builder(Text.of("Delete")) { button: ButtonWidget ->
@@ -89,12 +89,17 @@ class CloudSaveManagement(val worldName: String, val worldEntry: WorldEntry) : S
             CloudProvider.deleteSave(File("${QOLuxeConfig.cloudSaveLocation}/${worldName}"))
         }.tooltip(Tooltip.of(Text.of("This will delete the cloud save of $worldName, not including the local save.\n\nThis is a ${Formatting.RED}destructive${Formatting.RESET} action."))).dimensions(0, 0, 102, 20).build(), 1, gridWidget.copyPositioner().marginTop(10))
         val resolveConflicts = ButtonWidget.builder(Text.of("Edit Cloud Path")) { button: ButtonWidget ->
-            MinecraftClient.getInstance().setScreenAndRender(SelectCloudSaveFolder(worldName, worldEntry))
+            MinecraftClient.getInstance().setScreenAndRender(SelectCloudSaveFolder(this))
         }.dimensions(0, 0, 102, 20).build()
         adder.add(resolveConflicts, 1, gridWidget.copyPositioner().marginTop(10))
 
+        val closeButton = ButtonWidget.builder(Text.of("Close")) { button: ButtonWidget ->
+            MinecraftClient.getInstance().setScreenAndRender(SelectWorldScreen(null))
+        }.dimensions(0, 0, 213, 20).build()
+        adder.add(closeButton, 2, gridWidget.copyPositioner().marginTop(10))
+
         gridWidget.refreshPositions()
-        SimplePositioningWidget.setPos(gridWidget, 0, this.height / 7, width, height, 0.5f, 0.25f)
+        SimplePositioningWidget.setPos(gridWidget, 0, this.height / 8, width, height, 0.5f, 0.25f)
         gridWidget.forEachChild { drawableElement: ClickableWidget? ->
             addDrawableChild(
                 drawableElement

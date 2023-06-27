@@ -47,10 +47,13 @@ public class ViciousMod {
                 try {
                     Configurable config = (Configurable)variable.getAnnotation(Configurable.class);
                     List<Object> defined = new ArrayList<>();
+                    if (config.type() == ConfigType.RUNNABLE)
+                        continue;
+
                     if (config.type() == ConfigType.HUD) {
                         HudElement hudElement = (HudElement) variable.get(getConfig());
                         defined.add(hudElement.toList());
-                    } else {
+                    } else if (config.type() == ConfigType.INPUT_FIELD || config.type() == ConfigType.TOGGLE) {
                         defined.add(variable.get(getConfig()));
                     }
 

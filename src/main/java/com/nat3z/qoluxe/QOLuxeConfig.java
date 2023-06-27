@@ -1,5 +1,7 @@
 package com.nat3z.qoluxe;
 
+import com.nat3z.qoluxe.hooks.BindSlots;
+import com.nat3z.qoluxe.hooks.LockSlots;
 import com.nat3z.qoluxe.vicious.ConfigType;
 import com.nat3z.qoluxe.vicious.Configurable;
 import com.nat3z.qoluxe.vicious.ViciousConfig;
@@ -36,6 +38,44 @@ public class QOLuxeConfig implements ViciousConfig {
             type = ConfigType.TOGGLE
     )
     public static boolean allowExternalSlotBinding = false;
+
+    @Configurable(
+            name = "Hide Cloud Save in Title Screen",
+            description = "This will disable the \"Download All Cloud Saves\" Button in the Title Screen.",
+            category = "Cloud Save",
+            hidden = false,
+            subCategory = "---",
+            type = ConfigType.TOGGLE
+    )
+    public static boolean disableDownloadCloudSavesTitleScreen = false;
+
+    @Configurable(
+            name = "Clear all Slot Binds",
+            description = "",
+            category = "Inventory",
+            hidden = false,
+            subCategory = "Slots",
+            type = ConfigType.RUNNABLE
+    )
+    public static Runnable clearAllSlotBinds = () -> {
+        QOLuxeConfig.slotBinding = "";
+        BindSlots.INSTANCE.updateCache();
+    };
+
+    @Configurable(
+            name = "Clear all Slot Locks",
+            description = "",
+            category = "Inventory",
+            hidden = false,
+            subCategory = "Slots",
+            type = ConfigType.RUNNABLE
+    )
+    public static Runnable clearAllLocks = () -> {
+        QOLuxeConfig.lockedSlots = "";
+        LockSlots.INSTANCE.refreshLockSlotCache();
+    };
+
+
     @Configurable(
             name = "Locked Slots",
             description = "Slots that are locked",

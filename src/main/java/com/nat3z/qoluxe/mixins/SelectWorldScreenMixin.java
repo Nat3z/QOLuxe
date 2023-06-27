@@ -25,7 +25,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SelectWorldScreen.class)
 public class SelectWorldScreenMixin extends Screen {
     private ButtonWidget cloudSaveButton;
-    private Identifier widgetsTexture = Identifier.of("qoluxe", "textures/gui/widgets.png");
     private ButtonWidget downloadAllCloudSavesButton;
     @Shadow private ButtonWidget selectButton;
 
@@ -44,9 +43,9 @@ public class SelectWorldScreenMixin extends Screen {
     // injects a button to the screen and rescaling the "Select" button to fit it alongside it
     @Inject(method = "init", at = @At("TAIL"))
     private void init(CallbackInfo ci) {
-        this.cloudSaveButton = CloudSave.INSTANCE.manageCloudSave(widgetsTexture, selectButton, this.levelList);
+        this.cloudSaveButton = CloudSave.INSTANCE.manageCloudSave(CloudSave.getWidgetsTexture(), selectButton, this.levelList);
         // create a new textured button at 10, 22 with a width of 40 and a height of 40 with the texture of widgets.png offseted at 60, 0
-        this.downloadAllCloudSavesButton = CloudSave.INSTANCE.downloadAllCloudSavesButton(widgetsTexture, editButton);
+        this.downloadAllCloudSavesButton = CloudSave.INSTANCE.downloadAllCloudSavesButton(CloudSave.getWidgetsTexture(), editButton);
         this.cloudSaveButton.active = false;
         this.addDrawableChild(this.cloudSaveButton);
         this.addDrawableChild(this.downloadAllCloudSavesButton);

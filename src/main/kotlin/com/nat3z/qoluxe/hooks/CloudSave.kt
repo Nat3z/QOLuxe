@@ -11,10 +11,11 @@ import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.TexturedButtonWidget
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import net.minecraft.world.level.storage.LevelStorage.LevelList
 import java.util.function.Consumer
 
 object CloudSave {
+    @JvmStatic
+    val widgetsTexture = Identifier.of("qoluxe", "textures/gui/widgets.png")!!
 
     fun init(screen: Screen, event: ButtonWidget.PressAction): ButtonWidget {
         return ButtonWidget.builder(Text.of("Cloud Save"), event).dimensions(screen.width / 2 - 76, screen.height - 52, 72, 20).build()

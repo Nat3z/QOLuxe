@@ -99,15 +99,16 @@ class GuiConfig : Screen(Text.of("QOLuxe Config")) {
         var itemsAllLength = 0
         for (configItem in QOLuxe.viciousExt.configItems) {
             if (length >= 4) {
+                val canGoForward = itemsAllLength < QOLuxe.viciousExt.configItems.filter { !it.hidden }.size
+                val canGoBack = itemsAllLength > 4
+                addNavigationButtons(gridWidget, adder, canGoForward, canGoBack)
                 gridWidget.refreshPositions()
                 SimplePositioningWidget.setPos(gridWidget, 0, 0, width, height, 0.5f, 0.25f)
-                val canGoForward = itemsAllLength < QOLuxe.viciousExt.configItems.size
-                val canGoBack = itemsAllLength > 5
-                addNavigationButtons(gridWidget, adder, canGoForward, canGoBack)
+
                 gridWidgets.add(gridWidget)
                 length = 0;
-                adder = gridWidget.createAdder(2)
                 gridWidget = GridWidget()
+                adder = gridWidget.createAdder(2)
                 gridWidget.mainPositioner.margin(4, 4, 4, 0)
             }
             var item: Widget = generateEmptyButton()
@@ -157,11 +158,16 @@ class GuiConfig : Screen(Text.of("QOLuxe Config")) {
 
         if (length < 4) {
             while (length < 4) {
+                if (length == 0) {
+                    adder.add(generateEmptyButton(), 2, gridWidget.copyPositioner().marginTop(50))
+                    length += 1
+                    continue
+                }
                 adder.add(generateEmptyButton(), 2, gridWidget.copyPositioner().marginTop(10))
                 length += 1
             }
 
-            val canGoBack = itemsAllLength > 5
+            val canGoBack = itemsAllLength > 4
             addNavigationButtons(gridWidget, adder, false, canGoBack)
             gridWidget.refreshPositions()
             SimplePositioningWidget.setPos(gridWidget, 0, 0, width, height, 0.5f, 0.25f)
@@ -171,15 +177,21 @@ class GuiConfig : Screen(Text.of("QOLuxe Config")) {
 
         pages = gridWidgets
         currentGridWidget = pages[0]
+        System.out.println("Pages: ${pages.size}")
+
+        gridWidgets.forEach() { gridWidget ->
+            gridWidget.forEachChild() { child ->
+                child.visible = false
+            }
+            gridWidget.forEachChild { drawableElement: ClickableWidget? ->
+                addDrawableChild(
+                    drawableElement
+                )
+            }
+        }
 
         currentGridWidget.forEachChild() { child ->
             child.visible = true
-        }
-
-        gridWidget.forEachChild { drawableElement: ClickableWidget? ->
-            addDrawableChild(
-                drawableElement
-            )
         }
     }
 }
