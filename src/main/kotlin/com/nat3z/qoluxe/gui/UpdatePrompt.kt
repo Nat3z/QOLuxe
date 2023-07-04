@@ -10,6 +10,8 @@ import net.minecraft.client.gui.widget.ClickableWidget
 import net.minecraft.client.gui.widget.GridWidget
 import net.minecraft.client.gui.widget.SimplePositioningWidget
 import net.minecraft.text.Text
+import org.apache.commons.io.FileUtils
+import java.io.File
 
 class UpdatePrompt : Screen(Text.of("Update Available")) {
     val gridWidget = GridWidget()
@@ -19,8 +21,12 @@ class UpdatePrompt : Screen(Text.of("Update Available")) {
         renderBackground(context)
         context.matrices.push()
         context.matrices.scale(2f, 2f, 1f)
-        context.drawCenteredTextWithShadow(textRenderer, "Update Available", ((width / 2) / 2f).toInt(), (gridWidget.y - 40) / 2, 0xffffff)
+        if (MinecraftHook.isPreRelease)
+            context.drawCenteredTextWithShadow(textRenderer, "Pre-Release Available", ((width / 2) / 2f).toInt(), (gridWidget.y - 40) / 2, 0xffffff)
+        else
+            context.drawCenteredTextWithShadow(textRenderer, "Update Available", ((width / 2) / 2f).toInt(), (gridWidget.y - 40) / 2, 0xffffff)
         context.matrices.pop()
+
         context.drawCenteredTextWithShadow(textRenderer, "Please update to the latest version of QOLuxe", width / 2, gridWidget.y, 0xffffff)
         context.drawCenteredTextWithShadow(textRenderer, "Current Version: ${QOLuxe.VERSION}", width / 2, gridWidget.y + 20, 0xffffff)
         context.drawCenteredTextWithShadow(textRenderer, "Latest Version: ${MinecraftHook.updateVersion}", width / 2, gridWidget.y + 30, 0xffffff)
@@ -46,6 +52,13 @@ class UpdatePrompt : Screen(Text.of("Update Available")) {
         adder.add(ButtonWidget.builder(Text.of("Ignore Update")) {
             MinecraftClient.getInstance().setScreenAndRender(null)
             MinecraftHook.preparedUpdate = false
+            val optOutPreRelease = File(MinecraftClient.getInstance().runDirectory.absolutePath + "\\vicious\\opt-out-pre.txt")
+            if (!optOutPreRelease.exists()) {
+                optOutPreRelease.createNewFile()
+            }
+            val currentContents = FileUtils.readFileToString(optOutPreRelease, "UTF-8")
+            FileUtils.writeStringToFile(optOutPreRelease, currentContents + MinecraftHook.updateUrl + "\n", "UTF-8")
+
         }.dimensions(0, 0, 150, 20).build(), 2, gridWidget.copyPositioner().marginTop(10))
         gridWidget.refreshPositions()
         SimplePositioningWidget.setPos(gridWidget, 0, this.height / 7, width, height, 0.5f, 0.25f)

@@ -20,6 +20,7 @@ public class KeyboardMixin {
     private void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
         // check if it's a keypress and if the lock slot key is pressed
         if (action == 1 && QOLuxe.getLockSlot().matchesKey(key, scancode) && MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?>) {
+            if (SlotUtils.INSTANCE.getHoveredSlotId() == -1) return;
             LockSlots.INSTANCE.setLockHoveredSlot(true);
             LockSlots.INSTANCE.setAlreadyClicked(true);
         }

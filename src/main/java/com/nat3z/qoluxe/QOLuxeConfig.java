@@ -87,6 +87,16 @@ public class QOLuxeConfig implements ViciousConfig {
     public static String lockedSlots = "";
 
     @Configurable(
+            name = "Disable Cloud Saves",
+            description = "This will disable cloud saves for a specific level.",
+            category = "Cloud Saves",
+            hidden = true,
+            subCategory = "Disable",
+            type = ConfigType.INPUT_FIELD
+    )
+    public static String levelsOptedOut = "";
+
+    @Configurable(
             name = "Bind Slots",
             description = "Slots that are binded together",
             category = "Inventory",

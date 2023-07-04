@@ -45,21 +45,23 @@ class QOLuxe : ClientModInitializer {
         const val MOD_ID = "qoluxe"
         val config = QOLuxeConfig()
         val viciousExt = QOLuxeVicious()
+        @JvmField
+        val MC_COMPATIBLE_VERSION = "1.20.1"
         @JvmStatic
         val generalFolder = File("${MinecraftClient.getInstance().runDirectory.absolutePath}/config/qoluxe")
         @JvmStatic
         val IS_UNSTABLE = false
         @JvmStatic
-        val VERSION = "1.0.6"
+        val VERSION = "v1.0.7"
         @JvmStatic
         val LOGGER: Logger = LogManager.getLogger("QOLuxe Logger")!!
         @JvmStatic
         var showGui = false
         var shownGui: Screen? = null
         @JvmStatic
-        val disableAnimalRendering = KeyBinding("Disable Animal Rendering", InputUtil.GLFW_KEY_C, "QOLuxe")
+        val disableAnimalRendering = KeyBinding("Disable Animal Rendering", InputUtil.GLFW_KEY_T, "QOLuxe")
         @JvmStatic
-        val lockSlot = KeyBinding("Lock Slot", InputUtil.GLFW_KEY_C, "QOLuxe")
+        val lockSlot = KeyBinding("Lock Slot", InputUtil.GLFW_KEY_L, "QOLuxe")
         @JvmStatic
         var currentClientWorldName: String? = null
         @JvmStatic

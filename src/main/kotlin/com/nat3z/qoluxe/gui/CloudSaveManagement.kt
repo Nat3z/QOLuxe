@@ -56,6 +56,7 @@ class CloudSaveManagement(val worldName: String, val worldEntry: WorldEntry) : S
         super.render(context, mouseX, mouseY, delta)
     }
     override fun init() {
+        QOLuxeConfig.levelsOptedOut = QOLuxeConfig.levelsOptedOut.replace("[%%%%]$worldName", "")
         gridWidget.mainPositioner.margin(4, 4, 4, 0)
         val adder = gridWidget.createAdder(2)
         if (QOLuxeConfig.cloudSaveLocation.isNotEmpty())
@@ -88,15 +89,24 @@ class CloudSaveManagement(val worldName: String, val worldEntry: WorldEntry) : S
 
             CloudProvider.deleteSave(File("${QOLuxeConfig.cloudSaveLocation}/${worldName}"))
         }.tooltip(Tooltip.of(Text.of("This will delete the cloud save of $worldName, not including the local save.\n\nThis is a ${Formatting.RED}destructive${Formatting.RESET} action."))).dimensions(0, 0, 102, 20).build(), 1, gridWidget.copyPositioner().marginTop(10))
-        val resolveConflicts = ButtonWidget.builder(Text.of("Edit Cloud Path")) { button: ButtonWidget ->
+
+        val disableButton = ButtonWidget.builder(Text.of("${Formatting.RED}Disable")) { button: ButtonWidget ->
+            QOLuxeConfig.levelsOptedOut = QOLuxeConfig.levelsOptedOut + "[%%%%]" + worldName
+            MinecraftClient.getInstance().setScreenAndRender(SelectWorldScreen(null))
+        }.dimensions(0, 0, 102, 20).tooltip(Tooltip.of(Text.of("${Formatting.RED}This will disable cloud saves for " +
+                "this world. ${Formatting.YELLOW}If you decide to reopen the cloud save menu, it will be re-enabled."))).build()
+        adder.add(disableButton, 1, gridWidget.copyPositioner().marginTop(10))
+
+        val editCloudPath = ButtonWidget.builder(Text.of("Edit Cloud Path")) { button: ButtonWidget ->
             MinecraftClient.getInstance().setScreenAndRender(SelectCloudSaveFolder(this))
         }.dimensions(0, 0, 102, 20).build()
-        adder.add(resolveConflicts, 1, gridWidget.copyPositioner().marginTop(10))
+        adder.add(editCloudPath, 1, gridWidget.copyPositioner().marginTop(10))
 
         val closeButton = ButtonWidget.builder(Text.of("Close")) { button: ButtonWidget ->
             MinecraftClient.getInstance().setScreenAndRender(SelectWorldScreen(null))
-        }.dimensions(0, 0, 213, 20).build()
-        adder.add(closeButton, 2, gridWidget.copyPositioner().marginTop(10))
+        }.dimensions(0, 0, 102, 20).build()
+
+        adder.add(closeButton, 1, gridWidget.copyPositioner().marginTop(10))
 
         gridWidget.refreshPositions()
         SimplePositioningWidget.setPos(gridWidget, 0, this.height / 8, width, height, 0.5f, 0.25f)

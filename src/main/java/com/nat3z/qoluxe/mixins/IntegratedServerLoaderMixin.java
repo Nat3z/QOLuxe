@@ -52,6 +52,11 @@ public class IntegratedServerLoaderMixin {
             ci.cancel();
             return;
         }
+
+        if (QOLuxeConfig.levelsOptedOut.contains(levelName) && !CloudProvider.INSTANCE.getOpenCloudSaveConfig()) {
+            QOLuxe.getLOGGER().info("Level " + levelName + " is opted out of Cloud Save. Launching normally...");
+            return;
+        }
         if (QOLuxeConfig.cloudSaveLocation.isEmpty()) return;
         if (CloudProvider.INSTANCE.getScheduledResolveSaveConflict()) {
             CloudProvider.INSTANCE.setScheduledResolveSaveConflict(false);
@@ -78,6 +83,8 @@ public class IntegratedServerLoaderMixin {
             ci.cancel();
             return;
         }
+
+        CloudProvider.INSTANCE.saveWorldChanges(worldDirectory);
         QOLuxe.getLOGGER().info("Save Synchronized.");
 
     }
