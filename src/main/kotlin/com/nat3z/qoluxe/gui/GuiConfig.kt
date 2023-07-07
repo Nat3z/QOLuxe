@@ -12,9 +12,13 @@ import net.minecraft.client.gui.widget.GridWidget.Adder
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 
-class GuiConfig : Screen(Text.of("QOLuxe Config")) {
+class GuiConfig(val parent: Screen? = null) : Screen(Text.of("QOLuxe Config")) {
     var currentGridWidget = GridWidget()
     var pages = mutableListOf<GridWidget>()
+
+    override fun close() {
+        MinecraftClient.getInstance().setScreen(parent)
+    }
 
     override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
         super.renderBackground(context)
@@ -27,8 +31,8 @@ class GuiConfig : Screen(Text.of("QOLuxe Config")) {
             }
         }
         Formatting.WHITE.colorValue?.let { it1 ->
-            context.drawText(textRenderer, "v${QOLuxe.VERSION}", width / 2 - 15, currentGridWidget.y + 30,
-                it1, true)
+            context.drawCenteredTextWithShadow(textRenderer, QOLuxe.VERSION, width / 2, currentGridWidget.y + 30,
+                it1)
         }
 
         Formatting.WHITE.colorValue?.let { it1 ->

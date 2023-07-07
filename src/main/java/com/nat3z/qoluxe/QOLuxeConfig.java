@@ -50,6 +50,16 @@ public class QOLuxeConfig implements ViciousConfig {
     public static boolean disableDownloadCloudSavesTitleScreen = false;
 
     @Configurable(
+            name = "Encrypt all Realms Messagse",
+            description = "This will encrypt all of your messages sent in realms. This is useful for preventing your messages from being logged by the server.",
+            category = "Encryption",
+            hidden = false,
+            subCategory = "---",
+            type = ConfigType.TOGGLE
+    )
+    public static boolean encryptRealmsMessages = true;
+
+    @Configurable(
             name = "Clear all Slot Binds",
             description = "",
             category = "Inventory",
@@ -125,6 +135,17 @@ public class QOLuxeConfig implements ViciousConfig {
             type = ConfigType.INPUT_FIELD
     )
     public static String cloudSaveSignature = "";
+
+    @Configurable(
+            name = "Lithium Realms Data URL",
+            description = "Where lithium realms data is stored",
+            category = "Cloud",
+            hidden = true,
+            subCategory = "---",
+            type = ConfigType.INPUT_FIELD
+    )
+    public static String lithiumRealmsURL = "";
+
     @Configurable(
             name = "Levels Opted For Cloud Save",
             description = "Levels for Cloud Saving",

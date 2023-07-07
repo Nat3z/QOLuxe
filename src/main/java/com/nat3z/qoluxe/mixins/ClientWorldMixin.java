@@ -3,6 +3,7 @@ package com.nat3z.qoluxe.mixins;
 import com.nat3z.qoluxe.QOLuxe;
 import com.nat3z.qoluxe.QOLuxeConfig;
 import com.nat3z.qoluxe.utils.CloudProvider;
+import com.nat3z.qoluxe.utils.LithiumWebSocket;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.ClientWorld;
@@ -23,6 +24,11 @@ public class ClientWorldMixin {
 
     @Inject(method = "disconnect", at = @At("HEAD"))
     private void disconnect(CallbackInfo ci) {
+        if (LithiumWebSocket.getNetworkConnection() != null && LithiumWebSocket.getNetworkConnection().isOpen()) {
+            System.out.println("Closing connection to Lithium Websocket...");
+            LithiumWebSocket.getNetworkConnection().close();
+        }
+
         if (QOLuxeConfig.cloudSaveLocation.isEmpty()) return;
         if (QOLuxe.getCurrentClientWorldName() == null || QOLuxe.getCurrentClientWorldName().isEmpty()) return;
         new Thread(() -> {
@@ -33,6 +39,5 @@ public class ClientWorldMixin {
             System.out.println("Uploading world changes to cloud...");
             CloudProvider.INSTANCE.uploadSave(worldFolder);
         }).start();
-
     }
 }

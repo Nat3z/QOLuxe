@@ -5,13 +5,13 @@
   "name": "Qoluxe",
   "description": "A mod that adds some very helpful features to Minecraft realms.",
   "authors": [
-    "Nat3zDev"
+    "Nat3z"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://nat3z.com/",
+    "sources": "https://github.com/Nat3z/QOLuxe"
   },
-  "license": "CC0-1.0",
+  "license": "BSD-3-Clause",
   "icon": "assets/qoluxe/icon.png",
   "environment": "client",
   "entrypoints": {
@@ -20,7 +20,10 @@
         "adapter": "kotlin",
         "value": "com.nat3z.qoluxe.QOLuxe"
       }
-    ]
+    ],
+      "modmenu": [
+        "com.nat3z.qoluxe.ModMenuImpl"
+      ]
   },
   "mixins": [
     "qoluxe.mixins.json"
@@ -32,6 +35,20 @@
     "fabric-language-kotlin": ">=1.9.4+kotlin.1.8.21",
     "fabric-api": "*"
   },
+  "recommends": {
+    "modmenu": ">=4.1.0"
+  },
   "suggests": {
+  },
+  "custom": {
+    "modmenu": {
+      "parent": {
+        "id": "qoluxe",
+        "name": "QOLuxe",
+        "description": "A mod that adds some very helpful features to Minecraft realms.",
+        "icon": "assets/qoluxe/icon.png"
+      },
+      "update_checker": false
+    }
   }
 }

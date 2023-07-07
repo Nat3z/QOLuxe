@@ -3,6 +3,8 @@
   "package": "com.nat3z.qoluxe.mixins",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "ChatHudMixin",
+    "ChatScreenMixin",
     "ClientPlayerEntityMixin",
     "ClientWorldMixin",
     "CreateWorldScreenMixin",
@@ -12,6 +14,9 @@
     "KeyboardMixin",
     "MinecraftClientMixin",
     "MobEntityRendererMixin",
+    "RealmsGetServerDetailsTaskMixin",
+    "RealmsMainScreenMixin",
+    "RealmsSettingsScreenMixin",
     "SelectWorldScreenMixin",
     "TitleScreenMixin"
   ],

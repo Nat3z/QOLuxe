@@ -1,6 +1,7 @@
 package com.nat3z.qoluxe.utils
 import com.nat3z.qoluxe.QOLuxe
 import net.minecraft.client.MinecraftClient
+import org.apache.logging.log4j.LogManager
 import java.awt.Dimension
 import java.awt.event.ActionListener
 import java.io.*
@@ -14,101 +15,7 @@ import kotlin.system.exitProcess
 
 object ModAssistantHook {
 
-    fun openLauncher(modsFolder: File) {
-        val viciousFolder = File(MinecraftClient.getInstance().runDirectory.absolutePath + "\\vicious\\")
-        if (!viciousFolder.exists()) {
-            viciousFolder.mkdir()
-        }
-
-        val launcherSettings = File(viciousFolder.absolutePath + "\\launcherSettings.txt")
-        val viciousLauncher = File(MinecraftClient.getInstance().runDirectory.absolutePath + "\\vicious\\launcher.jar")
-
-        if (launcherSettings.exists()) {
-            if (FileUtils.readFile(launcherSettings).equals("disabled"))
-                return
-        }
-        if (!viciousLauncher.exists()) {
-            val maker = FrameMaker("Mod Assistant", Dimension(350, 150), WindowConstants.DO_NOTHING_ON_CLOSE, false)
-            val suc = AtomicBoolean(false)
-            val downloadingFull = AtomicBoolean(false)
-
-            val frame = maker.pack()
-            maker.addText("Would you like to install Mod Assistant Lite or Mod Assistant?", 10, 10, 11, false)
-            maker.addText("<html>Lite: Auto-Update system<br/>" + "Full: Mod Manager, Mods profile system, Minecraft pre-launch ui</html>", 10, 30, 11, false)
-
-            val skipUpdate = maker.addButton("Lite", 50, 70, 100, ActionListener { e ->
-                suc.set(true)
-                frame.dispose()
-            })
-            val downloadUpdate = maker.addButton("Full", 180, 70, 100, ActionListener { e ->
-                suc.set(true)
-                downloadingFull.set(true)
-                frame.dispose()
-            })
-            maker.override()
-            /* keep it from continuing */
-            while (!suc.get()) {
-                try {
-                    TimeUnit.SECONDS.sleep(1)
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                }
-
-            }
-
-            if (!downloadingFull.get()) {
-                if (!launcherSettings.exists()) {
-                    try {
-                        launcherSettings.createNewFile()
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-
-                    FileUtils.writeToFile(launcherSettings, "disabled")
-                    return
-                }
-            }
-        }
-        /* check if version is update */
-        WebUtils.fetch("https://api.github.com/repos/Nat3z/ModAssistant-Launcher/releases/latest") { res ->
-            val viciousCycle = res.asJson().get("assets").getAsJsonArray().get(0).getAsJsonObject().get("browser_download_url").getAsString()
-            try {
-                val version = res.asJson().get("tag_name").getAsString()
-                if (!launcherSettings.exists()) {
-                    launcherSettings.createNewFile()
-                    FileUtils.writeToFile(launcherSettings, "no version found.")
-                }
-
-                if (!launcherSettings.exists() || !FileUtils.readFile(launcherSettings).equals(version)) {
-                    QOLuxe.LOGGER.info("Mod Assistant Launcher is not installed/not up to date. Now installing Mod Assistant.")
-                    downloader(viciousFolder, viciousCycle, "launcher.jar")
-                    /* create version system */
-                    FileUtils.writeToFile(launcherSettings, version)
-                }
-            } catch (e: IOException) {
-                QOLuxe.LOGGER.error("Failed to download Mod Assistant launcher.jar")
-                e.printStackTrace()
-            }
-        }
-
-        var classes: List<Class<*>>? = null
-        try {
-            classes = JarFileReader.getClassesFromJarFile(viciousLauncher)
-
-            for (c in classes!!) {
-                if (c.simpleName.toLowerCase() == "modassistant") {
-                    val replaceMethod = c.getDeclaredMethod("open", File::class.java, File::class.java)
-
-                    QOLuxe.LOGGER.info("Attempting to open Mod Assistant Launcher.")
-                    val result = replaceMethod.invoke(c.newInstance(), modsFolder, MinecraftClient.getInstance().runDirectory) as Boolean
-                    if (!result) exitProcess(0)
-                }
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-    }
+    private val LOGGER = LogManager.getLogger("Mod Assistant")!!
 
     fun open(apiURL: String, downloadURL: String, modsFolder: File, filename: String, replacement: String, sha256: String, newNameOfJar: String): Boolean {
         val viciousFolder = File(MinecraftClient.getInstance().runDirectory.absolutePath + "\\vicious\\")
@@ -130,13 +37,13 @@ object ModAssistantHook {
                     FileUtils.writeToFile(updaterVersion, "no version found.")
                 }
                 if (!viciousUpdateCycle.exists() || !FileUtils.readFile(updaterVersion).equals(version)) {
-                    QOLuxe.LOGGER.info("Mod Assistant is not installed/not up to date. Now installing Mod Assistant.")
+                    LOGGER.info("Mod Assistant is not installed/not up to date. Now installing Mod Assistant.")
                     downloader(viciousFolder, viciousCycle, "updater.jar")
                     /* create version system */
                     FileUtils.writeToFile(updaterVersion, version)
                 }
             } catch (e: IOException) {
-                QOLuxe.LOGGER.error("Failed to download Vicious updater.jar")
+                LOGGER.error("Failed to download Vicious updater.jar")
                 e.printStackTrace()
             }
         }
@@ -164,11 +71,11 @@ object ModAssistantHook {
                 newNameOfJar
             ).start()
 
-            QOLuxe.LOGGER.info("Running Mod Assistant. " + "java -jar " + viciousUpdateCycle.absolutePath + " " + downloadURL + " " + modsFolder.absolutePath + " " + filename + " " + replacement + " " + sha256 + " true " + newNameOfJar)
+            LOGGER.info("Running Mod Assistant. " + "java -jar " + viciousUpdateCycle.absolutePath + " " + downloadURL + " " + modsFolder.absolutePath + " " + filename + " " + replacement + " " + sha256 + " true " + newNameOfJar)
             exitProcess(0)
 
         } catch (ex: Exception) {
-            QOLuxe.LOGGER.error("Failed to auto-update using Mod Assistant.")
+            LOGGER.error("Failed to auto-update using Mod Assistant.")
             ex.printStackTrace()
             return false
         }

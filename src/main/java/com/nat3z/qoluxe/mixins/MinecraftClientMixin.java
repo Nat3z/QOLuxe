@@ -7,11 +7,13 @@ import com.nat3z.qoluxe.gui.UpdatePrompt;
 import com.nat3z.qoluxe.hooks.LockSlots;
 import com.nat3z.qoluxe.hooks.MinecraftHook;
 import com.nat3z.qoluxe.utils.CloudProvider;
+import com.nat3z.qoluxe.utils.LithiumWebSocket;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.realms.RealmsClient;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.resource.ResourceReload;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -69,6 +71,19 @@ public class MinecraftClientMixin {
         if (QOLuxe.Companion.getShownGui() != null) {
             MinecraftClient.getInstance().setScreen(QOLuxe.Companion.getShownGui());
             QOLuxe.Companion.setShownGui(null);
+        }
+
+        if (QOLuxe.getTaskToRun() != null) {
+            QOLuxe.getTaskToRun().run();
+            QOLuxe.setTaskToRun(null);
+        }
+    }
+
+    @Inject(method = "setScreen", at = @At("HEAD"))
+    private void setScreen_Head(Screen screen, CallbackInfo ci) {
+        if (screen instanceof RealmsMainScreen && LithiumWebSocket.getNetworkConnection() != null && LithiumWebSocket.getNetworkConnection().isOpen()) {
+            LithiumWebSocket.getNetworkConnection().close();
+            System.out.println("Closed connection to Lithium Websocket.");
         }
     }
 }

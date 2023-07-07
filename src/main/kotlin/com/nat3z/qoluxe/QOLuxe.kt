@@ -38,6 +38,7 @@ class QOLuxe : ClientModInitializer {
                 }
             )
         })
+
         viciousExt.saveConfig()
     }
 
@@ -52,7 +53,9 @@ class QOLuxe : ClientModInitializer {
         @JvmStatic
         val IS_UNSTABLE = false
         @JvmStatic
-        val VERSION = "v1.0.7"
+        // TODO: NOTE TO SELF, UPDATE THE GRADLE FILE AS WELL
+        val VERSION = "v1.0.9"
+
         @JvmStatic
         val LOGGER: Logger = LogManager.getLogger("QOLuxe Logger")!!
         @JvmStatic
@@ -66,5 +69,12 @@ class QOLuxe : ClientModInitializer {
         var currentClientWorldName: String? = null
         @JvmStatic
         var isConnectedToRealms = false
+        @JvmStatic
+        var taskToRun: Runnable? = null
+
+        @JvmStatic
+        fun runSync(runnable: Runnable) {
+            taskToRun = runnable
+        }
     }
 }
