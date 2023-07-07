@@ -7,7 +7,6 @@ import com.nat3z.qoluxe.utils.ChatUtils;
 import com.nat3z.qoluxe.utils.LithiumServerUtils;
 import com.nat3z.qoluxe.utils.LithiumWebSocket;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsServerAddress;
 import net.minecraft.client.realms.task.LongRunningTask;
@@ -17,13 +16,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.net.URI;
 import java.net.URL;
-import java.security.KeyPair;
 
 @Mixin(RealmsGetServerDetailsTask.class)
 public abstract class RealmsGetServerDetailsTaskMixin extends LongRunningTask {
@@ -63,7 +60,7 @@ public abstract class RealmsGetServerDetailsTaskMixin extends LongRunningTask {
                 if (lithiumServerURL.equals("")) return;
                 // connect to server
                 QOLuxe.getLOGGER().info("Connecting to Lithium Server...");
-                URI url = new URI(lithiumServerURL.replace("https", "http").replace("http", "ws"));
+                URI url = new URI(lithiumServerURL.replace("http", "ws").replace("s:", "s:"));
                 QOLuxe.getLOGGER().info("Connecting to " + url.toString() + "...");
                 LithiumWebSocket.setNetworkConnection(new LithiumWebSocket(url, server.id));
                 if (LithiumWebSocket.getNetworkConnection() == null) return;

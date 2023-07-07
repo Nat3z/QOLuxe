@@ -85,6 +85,7 @@ class LithiumWebSocket(val url: URI, uuid: Long) : WebSocketClient(url) {
             }
         } catch (e: Exception) {
             println("Received invalid message from server: $message")
+            e.printStackTrace()
         }
 
 

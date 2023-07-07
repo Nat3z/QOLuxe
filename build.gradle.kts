@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     val kotlinVersion: String by System.getProperties()
 
@@ -15,7 +14,7 @@ java {
 
 group = "com.nat3z.qoluxe"
 // TODO: THIS IS WHERE YOU UPDATE THE VERSION
-version = "v1.0.9"
+version = "v1.1"
 
 
 val shadowImpl: Configuration by configurations.creating {

@@ -1,23 +1,15 @@
 package com.nat3z.qoluxe.hooks
 
 import com.nat3z.qoluxe.QOLuxe
-import com.nat3z.qoluxe.utils.FrameMaker
 import com.nat3z.qoluxe.utils.ModAssistantHook
-import com.nat3z.qoluxe.utils.WebUtils
 import com.nat3z.qoluxe.utils.WebUtils.fetch
 import net.minecraft.client.MinecraftClient
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
-import java.awt.Dimension
-import java.awt.event.ActionListener
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
-import javax.swing.WindowConstants
-import kotlin.system.exitProcess
 
 object MinecraftHook {
     public var preparedUpdate = false
@@ -27,6 +19,7 @@ object MinecraftHook {
     var updateMarkdown = ""
     var isPreRelease = false
     var updateUrl = ""
+    var criticalUpdate = false
     fun checkUpdates(ci: CallbackInfo) {
         val viciousFolder = File(".\\vicious\\")
         if (!viciousFolder.exists()) {
@@ -74,6 +67,11 @@ object MinecraftHook {
                             hashID =
                                 body.split("Hash:** `")[1].split("`")[0]
                         }
+
+                        if (body.contains("**CRITICAL UPDATE**")) {
+                            criticalUpdate = true
+                        }
+
                         QOLuxe.LOGGER.info(hashID)
 
                         QOLuxe.LOGGER.info("Prepared update for $modName.")

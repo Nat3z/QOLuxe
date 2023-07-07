@@ -5,7 +5,6 @@ import com.nat3z.qoluxe.hooks.LockSlots;
 import com.nat3z.qoluxe.vicious.ConfigType;
 import com.nat3z.qoluxe.vicious.Configurable;
 import com.nat3z.qoluxe.vicious.ViciousConfig;
-import net.minecraft.util.Formatting;
 
 public class QOLuxeConfig implements ViciousConfig {
 
@@ -50,7 +49,7 @@ public class QOLuxeConfig implements ViciousConfig {
     public static boolean disableDownloadCloudSavesTitleScreen = false;
 
     @Configurable(
-            name = "Encrypt all Realms Messagse",
+            name = "Encrypt all Realms Messages",
             description = "This will encrypt all of your messages sent in realms. This is useful for preventing your messages from being logged by the server.",
             category = "Encryption",
             hidden = false,

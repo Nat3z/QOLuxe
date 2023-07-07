@@ -1,10 +1,8 @@
 package com.nat3z.qoluxe
 
 import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.context.CommandContext
 import com.nat3z.qoluxe.hooks.LockSlots
 import net.fabricmc.api.ClientModInitializer
-import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
@@ -17,7 +15,7 @@ import net.minecraft.command.CommandRegistryAccess
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
-import java.util.UUID
+import java.util.*
 
 class QOLuxe : ClientModInitializer {
 
@@ -54,7 +52,7 @@ class QOLuxe : ClientModInitializer {
         val IS_UNSTABLE = false
         @JvmStatic
         // TODO: NOTE TO SELF, UPDATE THE GRADLE FILE AS WELL
-        val VERSION = "v1.0.9"
+        val VERSION = "v1.1"
 
         @JvmStatic
         val LOGGER: Logger = LogManager.getLogger("QOLuxe Logger")!!

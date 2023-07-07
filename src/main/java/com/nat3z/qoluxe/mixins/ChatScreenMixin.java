@@ -5,7 +5,6 @@ import com.nat3z.qoluxe.utils.ChatUtils;
 import com.nat3z.qoluxe.utils.LithiumWebSocket;
 import kotlin.text.Regex;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -45,8 +44,13 @@ public abstract class ChatScreenMixin {
                     if (content.length() > 100) {
                         String[] splitText = normalizedText.split("(?<=\\G.{100})");
                         System.out.println("Splitting Chat Message into " + splitText.length + " messages");
+                        int len = -1;
                         for (String text : splitText) {
+                            len++;
                             System.out.println("Sending message: " + text);
+                            if (len == 0) {
+                                text = text.replace("/w " + recipient + " ", "");
+                            }
                             text = ChatUtils.INSTANCE.encryptMessage(text, Objects.requireNonNull(ChatUtils.INSTANCE.getLocalKeys()));
                             MinecraftClient.getInstance().getNetworkHandler().sendChatCommand("w " + recipient + " ." + text);
                         }
