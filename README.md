@@ -5,6 +5,8 @@ A suite of Minecraft mods that add quality of life features to the game.
 - **Cloud Saves**: Automatically upload your singleplayer worlds to the cloud and download them on any other computer.
 - **Slot Binding**: Bind slots to other slots in your inventory to automatically move items around.
 - **Slot Locking**: Lock slots to prevent them from being moved or dropped.
+- **Realms Texture Packs**: Allow for realms to select a required resource pack and automatically apply it whenever joining the realm.
+- **Realms Chat Encryption**: Automically encrypt chat messages on realms to prevent users from being logged/reported by Microsoft.
 
 This mod is still in development and more features will be added in the future.
 Please know that this mod is **use at your own risk**, and I am not liable for any bans or other punishments you
