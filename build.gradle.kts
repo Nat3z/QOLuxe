@@ -40,7 +40,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:2.0")
     implementation("commons-io:commons-io:2.13.0")
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
-    implementation("org.java-websocket:Java-WebSocket:1.5.3")
+    implementation("org.java-websocket:Java-WebSocket:1.5.4")
 
     minecraft("com.mojang:minecraft:$minecraftVersion")
     mappings("net.fabricmc:yarn:$yarnVersion:v2")
