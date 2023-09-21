@@ -83,7 +83,7 @@ tasks.shadowJar {
         // include all dependencies starting with org.apache
         include(dependency("org.apache.httpcomponents.client5:httpclient5:5.2.1"))
         include(dependency("org.apache.httpcomponents.core5:httpcore5:5.2.2"))
-        include(dependency("org.apache.httpcomponents.core5:httpcore5-h2:5.2.2"))
+        include(dependency("org.apache.httpcomponents.core5:httpcore5-h2:5.2.3"))
         include(dependency("org.apache.httpcomponents:httpclient:4.5.14"))
         include(dependency("org.apache.httpcomponents:httpcore:4.4.16"))
 
