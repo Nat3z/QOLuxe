@@ -38,7 +38,7 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
     implementation("org.yaml:snakeyaml:2.0")
-    implementation("commons-io:commons-io:2.13.0")
+    implementation("commons-io:commons-io:2.14.0")
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
     implementation("org.java-websocket:Java-WebSocket:1.5.3")
 
@@ -79,7 +79,7 @@ tasks {
 tasks.shadowJar {
     dependencies {
         include(dependency("org.yaml:snakeyaml:2.0"))
-        include(dependency("commons-io:commons-io:2.13.0"))
+        include(dependency("commons-io:commons-io:2.14.0"))
         // include all dependencies starting with org.apache
         include(dependency("org.apache.httpcomponents.client5:httpclient5:5.2.1"))
         include(dependency("org.apache.httpcomponents.core5:httpcore5:5.2.2"))
